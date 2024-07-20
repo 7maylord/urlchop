@@ -1,0 +1,80 @@
+openapi: 3.0.1
+info:
+  title: Scissor API
+  description: API for Scissor URL Shortener
+  version: 1.0.0
+paths:
+  /api/urls/shorten:
+    post:
+      summary: Create a short URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                longUrl:
+                  type: string
+                customUrl:
+                  type: string
+      responses:
+        201:
+          description: URL created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shortUrl:
+                    type: string
+  /api/urls/{shortUrl}:
+    get:
+      summary: Redirect to long URL
+      parameters:
+        - in: path
+          name: shortUrl
+          required: true
+          schema:
+            type: string
+      responses:
+        302:
+          description: Found
+  /api/urls/analytics/{shortUrl}:
+    get:
+      summary: Get URL analytics
+      parameters:
+        - in: path
+          name: shortUrl
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Analytics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clicks:
+                    type: integer
+  /api/urls/history:
+    get:
+      summary: Get link history
+      responses:
+        200:
+          description: List of URLs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    longUrl:
+                      type: string
+                    shortUrl:
+                      type: string
+                    clicks:
+                      type: integer
