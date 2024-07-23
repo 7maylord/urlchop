@@ -4,7 +4,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IUrl extends Document {
   longUrl: string;
   shortUrl: string;
-  customUrl?: string;
+  urlId?: string;
   qrCode: string;
   clicks: number;
   createdBy: Schema.Types.ObjectId;
@@ -15,7 +15,7 @@ export interface IUrl extends Document {
 const urlSchema: Schema = new Schema({
   longUrl: { type: String, required: true },
   shortUrl: { type: String, required: true, unique: true },
-  customUrl: { type: String, unique: true },
+  urlId: { type: String, unique: true },
   qrCode: { type: String, required: true },
   clicks: { type: Number, default: 0 },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },

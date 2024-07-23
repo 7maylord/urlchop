@@ -23,14 +23,14 @@ export const shortenUrl = async (req: AuthenticatedRequest, res: Response): Prom
 
 //Controller for redirecting a short URL.
 export const redirectUrl = async (req: Request, res: Response): Promise<void> => {
-    const { shortUrl } = req.params;
+    const { urlId } = req.params;
     try {        
-        const url = await getUrl(shortUrl);
+        const url = await getUrl(urlId);
         if (!url) {
             res.status(404).json({ error: 'URL not found' });
             return;
           }
-          await incrementClicks(shortUrl);
+          await incrementClicks(urlId);
           res.redirect(url.longUrl);
     } catch (error: any) {
         console.error('Error redirecting:', error);

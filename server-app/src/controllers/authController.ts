@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User, { IUser } from '../models/user';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { AuthenticatedRequest } from '../middleware/auth';
 
 const generateToken = (userId: string): string => {
   return jwt.sign({ _id: userId }, process.env.JWT_SECRET!, { expiresIn: '1h' });
@@ -28,11 +29,11 @@ export const registerUser = async (req: Request, res: Response) => {
 
     // Save the user to the database
     await user.save();
-    // Generate token
+    // Typeguard to check if new user contains _id property
     if (!user._id) {
         throw new Error('User ID is missing');
       }  
-
+    // Generate token
     const token = generateToken(user._id);
     res.status(201).json({ user, token });
   } catch (error: any) {
@@ -55,5 +56,14 @@ export const loginUser = async (req: Request, res: Response) => {
     res.status(200).json({ user, token });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) => {
+  const user = req.user;
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(401).json({ error: 'Not authenticated' });
   }
 };

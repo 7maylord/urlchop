@@ -5,8 +5,9 @@ import { auth } from '../middleware/auth';
 
 const router = Router();
 
-router.post('/', validateUrl, auth, shortenUrl);
-router.get('/:shortUrl', redirectUrl);
+router.post('/url', validateUrl, auth, shortenUrl);
+router.get('/:urlId', redirectUrl);
+//router.get('/url/:urlId', auth, getShortUrl);
 router.get('/analytics/:shortUrl', auth, getUrlAnalytics);
 router.get('/history/:userId', auth, getUserLinkHistory);
 router.delete('/:shortUrl', auth, deleteUrl);

@@ -16,46 +16,54 @@ export const createShortUrl = async (
   userId: string,
   customUrl?: string
 ): Promise<IUrl> => {
+  // Check if URL is already cached
   const cachedUrl = await cacheGet(longUrl);
   if (cachedUrl) {
     return JSON.parse(cachedUrl);
   }
 
+  // Check if URL already exists in database
   let url = await Url.findOne({ longUrl, createdBy: userId });
   if (url) {
     await cacheSet(longUrl, JSON.stringify(url), 3600);
     return url;
   }
 
-  const shortUrl = customUrl || nanoid(7);
+  // Generate short URL and optional custom URL
+  const urlId = nanoid(7);
+  const base = process.env.BASE; // Adjust this based on your application's base URL
+  const shortUrl = customUrl || `${base}/${urlId}`;
   //check if customUrl is null or undefined to avoid issues with mongoDb
-  if (customUrl === null || customUrl === undefined) {
-    customUrl = shortUrl;
-  }
+  // if (customUrl === null || customUrl === undefined) {
+  //   customUrl = shortUrl;
+  // }
+  // Generate QR code for the short URL
   const qrCode = await generateQrCode(shortUrl);
-
-  url = new Url({ longUrl, shortUrl, customUrl, qrCode, createdBy: userId });
+  // Create new URL object
+  url = new Url({ longUrl, shortUrl, urlId, qrCode, createdBy: userId });
+  // Save URL to database
   await url.save();
   // Update user's urls array
   await User.findByIdAndUpdate(userId, { $push: { urls: url._id } });
+  // Cache the URL
   await cacheSet(longUrl, JSON.stringify(url), 3600);
   return url;
 };
 
 /**
- * Retrieves a URL document by its short URL.
- * @param shortUrl - The short URL.
+ * Retrieves a URL document by its short URL ID.
+ * @param urlId - The URL ID.
  * @returns The URL object or null if not found.
  */
-export const getUrl = async (shortUrl: string): Promise<IUrl | null> => {
-  const cachedUrl = await cacheGet(shortUrl);
+export const getUrl = async (urlId: string): Promise<IUrl | null> => {
+  const cachedUrl = await cacheGet(urlId);
   if (cachedUrl) {
     return JSON.parse(cachedUrl);
   }
 
-  const url = await Url.findOne({ shortUrl });
+  const url = await Url.findById({ urlId });
   if (url) {
-    await cacheSet(shortUrl, JSON.stringify(url), 3600);
+    await cacheSet(urlId, JSON.stringify(url), 3600);
     return url;
   }
 
@@ -63,17 +71,17 @@ export const getUrl = async (shortUrl: string): Promise<IUrl | null> => {
 };
 
 /**
- * Increments the click count for a given short URL.
- * @param shortUrl - The short URL.
+ * Increments the click count for a given URL ID.
+ * @param urlId - The URL ID.
  */
-export const incrementClicks = async (shortUrl: string): Promise<void> => {
-  const url = await Url.findOneAndUpdate(
-    { shortUrl },
+export const incrementClicks = async (urlId: string): Promise<void> => {
+  const url = await Url.findByIdAndUpdate(
+    urlId,
     { $inc: { clicks: 1 } },
     { new: true }
   );
   if (url) {
-    await cacheSet(shortUrl, JSON.stringify(url), 3600);
+    await cacheSet(urlId, JSON.stringify(url), 3600);
   }
 };
 
@@ -97,12 +105,15 @@ export const getAnalytics = async (
  * @param userId - The user ID.
  * @returns True if deleted, false otherwise.
  */
-export const deleteShortUrl = async (shortUrl: string, userId: string): Promise<boolean> => {
+export const deleteShortUrl = async (
+  shortUrl: string,
+  userId: string
+): Promise<boolean> => {
   const url = await Url.findOneAndDelete({ shortUrl, createdBy: userId });
   if (url) {
-      await cacheDel(shortUrl);
-      await cacheDel(url.longUrl);
-      return true;
+    await cacheDel(shortUrl);
+    await cacheDel(url.longUrl);
+    return true;
   }
   return false;
 };
