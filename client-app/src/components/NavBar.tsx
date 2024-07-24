@@ -1,18 +1,41 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext';
 
-const NavBar: React.FC = () => {
-    return (
-        <nav>
-            <ul>
-                <li><Link to="/">Home</Link></li>
-                <li><Link to="/login">Login</Link></li>
-                <li><Link to="/register">Register</Link></li>
-                <li><Link to="/analytics">Analytics</Link></li>
-                <li><Link to="/linkhistory">Link History</Link></li>
-            </ul>
-        </nav>
-    );
+const Navbar = () => {
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    auth?.logout();
+    navigate('/login');
+  };
+
+  return (
+    <nav className="bg-slate-900 p-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <div className="text-white font-bold text-xl">
+          UrlChop
+        </div>
+        <div>
+        {auth?.user ? (
+            <>
+              <Link to="/shorten" className="text-white mr-4 hover:text-gray-300">Shorten URL</Link>
+              <Link to="/link-history" className="text-white mr-4 hover:text-gray-300">Link History</Link>
+              <Link to="/analytics" className="text-white mr-4 hover:text-gray-300">Analytics</Link>
+              <button onClick={handleLogout} className="text-white hover:text-gray-300">Logout</button>
+            </>
+          ) : (
+            <>
+              <Link to="/" className="text-white mr-4 hover:text-gray-300">Home</Link>
+              <Link to="/login" className="text-white mr-4 hover:text-gray-300">Login</Link>
+              <Link to="/register" className="text-white hover:text-gray-300">Register</Link>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
 };
 
-export default NavBar;
+export default Navbar;

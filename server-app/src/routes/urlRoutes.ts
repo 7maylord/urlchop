@@ -10,6 +10,6 @@ router.get('/:urlId', redirectUrl);
 //router.get('/url/:urlId', auth, getShortUrl);
 router.get('/analytics/:shortUrl', auth, getUrlAnalytics);
 router.get('/history/:userId', auth, getUserLinkHistory);
-router.delete('/:shortUrl', auth, deleteUrl);
+router.delete('/url/:urlId', auth, deleteUrl);
 
 export default router;

@@ -6,14 +6,14 @@ import { AuthenticatedRequest } from '../middleware/auth';
 
 //Controller for creating a short URL.
 export const shortenUrl = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const { longUrl, customUrl } = req.body;    
+    const { longUrl, customId } = req.body;    
     try {        
         const userId = (req.user as IUser)._id;
         if (!userId) {
             res.status(404).json({ error: 'UserId not found' });
             return;
             }    
-        const url = await createShortUrl(longUrl, userId, customUrl);
+        const url = await createShortUrl(longUrl, userId, customId);
         res.status(201).json(url);
     } catch (error: any) {
         console.error('Error creating shortUrl:', error);
@@ -78,10 +78,10 @@ export const getUserLinkHistory = async (req: AuthenticatedRequest, res: Respons
 
 //Controller for deleting a Url.
   export const deleteUrl = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const { shortUrl } = req.params;
+    const { urlId } = req.params;
     const userId = (req.user as any)._id;
     try {
-        const result = await deleteShortUrl(shortUrl, userId);
+        const result = await deleteShortUrl(urlId, userId);
         if (result) {
             res.status(200).json({ message: 'URL deleted successfully' });
         } else {

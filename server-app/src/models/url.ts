@@ -5,6 +5,7 @@ export interface IUrl extends Document {
   longUrl: string;
   shortUrl: string;
   urlId?: string;
+  customId?: string;
   qrCode: string;
   clicks: number;
   createdBy: Schema.Types.ObjectId;
