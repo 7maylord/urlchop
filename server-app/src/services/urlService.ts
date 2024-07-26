@@ -29,22 +29,28 @@ export const createShortUrl = async (
     return url;
   }
 
-  let urlId = ''; // Initialize urlId
-  
+  let urlId = ""; // Initialize urlId
+
   // Check if customId is null or undefined to avoid issues with MongoDB
   if (!customId) {
     urlId = nanoid(7); // Generate a random ID of length 7
   } else {
     urlId = customId; // Use customId if provided
   }
-  const base = process.env.BASE; // Adjust this based on your application's base URL  
+  const base = process.env.BASE; // Adjust this based on your application's base URL
   const shortUrl = `${base}/api/${urlId}`;
 
-  
   // Generate QR code for the short URL
   const qrCode = await generateQrCode(shortUrl);
   // Create new URL object
-  url = new Url({ longUrl, shortUrl, customId, urlId, qrCode, createdBy: userId });
+  url = new Url({
+    longUrl,
+    shortUrl,
+    customId,
+    urlId,
+    qrCode,
+    createdBy: userId,
+  });
   // Save URL to database
   await url.save();
   // Update user's urls array
@@ -65,7 +71,7 @@ export const getUrl = async (urlId: string): Promise<IUrl | null> => {
   if (cachedUrl) {
     return JSON.parse(cachedUrl);
   }
-// If not cached, fetch from the database
+  // If not cached, fetch from the database
   const url = await Url.findOne({ urlId });
   if (url) {
     // Cache the fetched URL for future use
@@ -80,10 +86,13 @@ export const getUrl = async (urlId: string): Promise<IUrl | null> => {
  * Increments the click count for a given URL ID.
  * @param urlId - The URL ID.
  */
-export const incrementClicks = async (urlId: string, origin: string): Promise<void> => {
+export const incrementClicks = async (
+  urlId: string,
+  origin: string
+): Promise<void> => {
   const url = await Url.findOne({ urlId }); // Fetch the URL document
   if (url) {
-    const clickIndex = url.clicks.findIndex(click => click.origin === origin); // Check if the origin exists
+    const clickIndex = url.clicks.findIndex((click) => click.origin === origin); // Check if the origin exists
 
     if (clickIndex > -1) {
       url.clicks[clickIndex].count += 1; // Increment click count for existing origin
@@ -97,7 +106,6 @@ export const incrementClicks = async (urlId: string, origin: string): Promise<vo
   }
 };
 
-
 /**
  * Retrieves analytics data for a given short URL.
  * @param urlId - The URL Id.
@@ -109,7 +117,7 @@ export const getAnalytics = async (
   userId: string
 ): Promise<{ clicks: IClick[] } | null> => {
   const url = await Url.findOne({ urlId, createdBy: userId }); // Fetch URL document for the specific user
-  return url ? { clicks: url.clicks } : null;  // Return click data or null if not found
+  return url ? { clicks: url.clicks } : null;
 };
 
 /**
