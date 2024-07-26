@@ -1,5 +1,12 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+// Interface representing a single click
+export interface IClick {
+  origin: string;
+  timestamp: Date;
+  count: number;
+}
+
 // Interface representing the URL document in MongoDB.
 export interface IUrl extends Document {
   longUrl: string;
@@ -7,7 +14,7 @@ export interface IUrl extends Document {
   urlId?: string;
   customId?: string;
   qrCode: string;
-  clicks: number;
+  clicks: IClick[];
   createdBy: Schema.Types.ObjectId;
   timestamp: Date;
 }
@@ -18,7 +25,7 @@ const urlSchema: Schema = new Schema({
   shortUrl: { type: String, required: true, unique: true },
   urlId: { type: String, unique: true },
   qrCode: { type: String, required: true },
-  clicks: { type: Number, default: 0 },
+  clicks: { type: [{ origin: String, timestamp: Date, count: Number }], default: [] },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   timestamp: { type: Date, default: Date.now },
 });

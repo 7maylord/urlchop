@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { AuthenticatedRequest } from '../middleware/auth';
 
-const generateToken = (userId: string): string => {
+export const generateToken = (userId: string): string => {
   return jwt.sign({ _id: userId }, process.env.JWT_SECRET!, { expiresIn: '1h' });
 };
 
@@ -35,7 +35,7 @@ export const registerUser = async (req: Request, res: Response) => {
       }  
     // Generate token
     const token = generateToken(user._id);
-    res.status(201).json({ user, token });
+    res.status(201).json({ message: 'User created successfully', user, token });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -52,7 +52,7 @@ export const loginUser = async (req: Request, res: Response) => {
         throw new Error('User ID is missing');
       }
       
-      const token = generateToken(user._id.toString());
+    const token = generateToken(user._id.toString());
     res.status(200).json({ user, token });
   } catch (error: any) {
     res.status(400).json({ error: error.message });

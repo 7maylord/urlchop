@@ -20,7 +20,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     if (!user) {
         return res.status(401).send({ error: 'Not authenticated' });
       }
-  
+  // Set user property on request
       (req as AuthenticatedRequest).user = user;
     next();
   } catch (error) {

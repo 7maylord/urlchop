@@ -7,8 +7,7 @@ const router = Router();
 
 router.post('/url', validateUrl, auth, shortenUrl);
 router.get('/:urlId', redirectUrl);
-//router.get('/url/:urlId', auth, getShortUrl);
-router.get('/analytics/:shortUrl', auth, getUrlAnalytics);
+router.get('/analytics/:urlId', auth, getUrlAnalytics);
 router.get('/history/:userId', auth, getUserLinkHistory);
 router.delete('/url/:urlId', auth, deleteUrl);
 

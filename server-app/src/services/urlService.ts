@@ -1,4 +1,4 @@
-import Url, { IUrl } from "../models/url";
+import Url, { IUrl, IClick } from "../models/url";
 import User, { IUser } from "../models/user";
 import { nanoid } from "nanoid";
 import generateQrCode from "../utils/qrCodeGenerator";
@@ -69,45 +69,52 @@ export const getUrl = async (urlId: string): Promise<IUrl | null> => {
   const url = await Url.findOne({ urlId });
   if (url) {
     // Cache the fetched URL for future use
-    await cacheSet(urlId, JSON.stringify(url), 3600);
+    await cacheSet(urlId, JSON.stringify(url), 3600); // Cache for 1 hour
     return url;
   }
 
-  return null;
+  return null; // Return null if URL not found
 };
 
 /**
  * Increments the click count for a given URL ID.
  * @param urlId - The URL ID.
  */
-export const incrementClicks = async (urlId: string): Promise<void> => {
-  const url = await Url.findOneAndUpdate(
-    {urlId },
-    { $inc: { clicks: 1 } },
-    { new: true }
-  );
+export const incrementClicks = async (urlId: string, origin: string): Promise<void> => {
+  const url = await Url.findOne({ urlId }); // Fetch the URL document
   if (url) {
-    await cacheSet(urlId, JSON.stringify(url), 3600);
+    const clickIndex = url.clicks.findIndex(click => click.origin === origin); // Check if the origin exists
+
+    if (clickIndex > -1) {
+      url.clicks[clickIndex].count += 1; // Increment click count for existing origin
+    } else {
+      // Add new origin with initial click count
+      url.clicks.push({ origin, timestamp: new Date(), count: 1 });
+    }
+
+    await url.save();
+    await cacheSet(urlId, JSON.stringify(url), 3600); // Update the cache
   }
 };
 
+
 /**
  * Retrieves analytics data for a given short URL.
- * @param shortUrl - The short URL.
+ * @param urlId - The URL Id.
  * @param userId - The ID of the user requesting analytics.
  * @returns The analytics data.
  */
 export const getAnalytics = async (
-  shortUrl: string,
+  urlId: string,
   userId: string
-): Promise<{ clicks: number } | null> => {
-  const url = await Url.findOne({ shortUrl, createdBy: userId });
-  return url ? { clicks: url.clicks } : null;
+): Promise<{ clicks: IClick[] } | null> => {
+  const url = await Url.findOne({ urlId, createdBy: userId }); // Fetch URL document for the specific user
+  return url ? { clicks: url.clicks } : null;  // Return click data or null if not found
 };
 
 /**
  * Deletes a short URL.
- * @param urlId - The short URL Id.
+ * @param urlId - The URL Id.
  * @param userId - The user ID.
  * @returns True if deleted, false otherwise.
  */

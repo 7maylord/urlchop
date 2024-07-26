@@ -25,13 +25,14 @@ export const shortenUrl = async (req: AuthenticatedRequest, res: Response): Prom
 export const redirectUrl = async (req: Request, res: Response): Promise<void> => {
     const { urlId } = req.params;
     try {        
-        const url = await getUrl(urlId);
+        const url = await getUrl(urlId);  // Retrieve the URL from the service
         if (!url) {
             res.status(404).json({ error: 'URL not found' });
             return;
           }
-          await incrementClicks(urlId);
-          res.redirect(url.longUrl);
+          const origin = req.get('referer') || 'direct';
+          await incrementClicks(urlId, origin);
+          res.redirect(302, url.longUrl);
     } catch (error: any) {
         console.error('Error redirecting:', error);
         res.status(500).json({ error: error.message });
@@ -40,16 +41,16 @@ export const redirectUrl = async (req: Request, res: Response): Promise<void> =>
 
 //Controller for getting analytics of a short URL.
 export const getUrlAnalytics = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const { shortUrl } = req.params;
+    const { urlId } = req.params;
     try {                
         const userId = (req.user as IUser)._id;
         if (!userId) {
             res.status(404).json({ error: 'UserId not found' });
             return;
         }
-        const analytics = await getAnalytics(shortUrl, userId);
+        const analytics = await getAnalytics(urlId, userId);  // Retrieve analytics
         if (!analytics) {
-            res.status(404).json({ error: 'URL not found or you do not have access to this URL' });
+            res.status(404).json({ error: 'URL not found' });
             return;
           }
           res.status(200).json(analytics);
