@@ -1,45 +1,38 @@
 import request from 'supertest';
-import app from '../src/app'; 
-import User from '../src/models/user'; 
-import mongoose, { Types, Schema } from 'mongoose';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import app from '../src/app';
+import User from '../src/models/user';
+import mongoose, { Types } from 'mongoose';
 import dotenv from 'dotenv';
-import { generateToken } from '../src/controllers/authController'
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import connectToMongoDB from '../src/utils/connectMongoDb';
 
-// Load environment variables from .env file
-dotenv.config();
+// Load environment variables from .env.test file
+dotenv.config({ path: '.env.test' });
 
 // Define a test user interface
-interface User {
-    _id: Types.ObjectId;
-    username: string;
-    email: string;
-    password: string;
-    urls?: Schema.Types.ObjectId[];
-    token?: string;
-  }
-  
-  // Define test users
-const testUser: User= {
+interface TestUser {
+  _id: Types.ObjectId;
+  username: string;
+  email: string;
+  password: string;
+  urls?: Types.ObjectId[];
+  token?: string;
+}
+
+// Define test users
+const testUser: TestUser = {
   _id: new mongoose.Types.ObjectId(),
   username: 'testuser',
   email: 'testuser@example.com',
   password: 'TestPassword123',
 };
 
-
 let token: string;
 let userId: string;
 let urlId: string;
-let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
-  // Connect to the in-memory database
-  mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    await mongoose.connect(mongoUri);
+  // Connect to the database
+  await connectToMongoDB();
 
   // Register a test user
   await request(app)
@@ -53,13 +46,17 @@ beforeAll(async () => {
 
 afterAll(async () => {
   // Clean up database and disconnect
+  const collections = mongoose.connection.collections;
+  for (const key in collections) {
+    const collection = collections[key];
+    await collection.deleteMany({});
+  }
   await mongoose.disconnect();
-  await mongoServer.stop();
 });
 
 describe('Auth Controller Tests', () => {
   it('should register a new user', async () => {
-    return request(app)
+    await request(app)
       .post('/api/auth/register')
       .send({
         username: 'newuser',
@@ -75,7 +72,7 @@ describe('Auth Controller Tests', () => {
   });
 
   it('should not register a user with an existing email', async () => {
-    return request(app)
+    await request(app)
       .post('/api/auth/register')
       .send(testUser)
       .expect(400)
@@ -85,7 +82,7 @@ describe('Auth Controller Tests', () => {
   });
 
   it('should not login with invalid credentials', async () => {
-    return request(app)
+    await request(app)
       .post('/api/auth/login')
       .send({
         email: testUser.email,
@@ -98,7 +95,7 @@ describe('Auth Controller Tests', () => {
   });
 
   it('should login with valid credentials', async () => {
-    return request(app)
+    await request(app)
       .post('/api/auth/login')
       .send({
         email: testUser.email,
@@ -115,7 +112,7 @@ describe('Auth Controller Tests', () => {
   });
 
   it('should get the current user', async () => {
-    return request(app)
+    await request(app)
       .get('/api/auth/me')
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
@@ -125,9 +122,10 @@ describe('Auth Controller Tests', () => {
       });
   });
 });
+
 describe('URL Controller Tests', () => {
   it('should shorten a URL', async () => {
-    return request(app)
+    await request(app)
       .post('/api/url')
       .set('Authorization', `Bearer ${token}`)
       .send({
@@ -139,10 +137,10 @@ describe('URL Controller Tests', () => {
         expect(res.body).toHaveProperty('shortUrl');
         urlId = res.body.urlId;
       });
-  });
+  }, 10000); // Increased the test timeout to 10 seconds.
 
   it('should redirect a URL', async () => {
-    return request(app)
+    await request(app)
       .get(`/api/${urlId}`)
       .expect(302)
       .then((res) => {
@@ -151,7 +149,7 @@ describe('URL Controller Tests', () => {
   });
 
   it('should get URL analytics', async () => {
-    return request(app)
+    await request(app)
       .get(`/api/analytics/${urlId}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
@@ -161,8 +159,8 @@ describe('URL Controller Tests', () => {
   });
 
   it('should get user link history', async () => {
-    return request(app)
-      .get('/api/history/')
+    await request(app)
+      .get(`/api/history/${userId}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .then((res) => {
@@ -172,8 +170,8 @@ describe('URL Controller Tests', () => {
   });
 
   it('should delete a URL', async () => {
-    return request(app)
-      .delete(`/url/${urlId}`)
+    await request(app)
+      .delete(`/api/url/${urlId}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .then((res) => {

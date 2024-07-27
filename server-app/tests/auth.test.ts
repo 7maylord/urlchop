@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 import { auth, AuthenticatedRequest } from '../src/middleware/auth';
 import User from '../src/models/user';
 
-// Load environment variables from .env file
-dotenv.config();
+// Load environment variables from .env.test file
+dotenv.config({ path: '.env.test' });
 
 // Mock the User model
 jest.mock('../src/models/user');

@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
-const MONGO_URI: string = process.env.MONGO_URI || 'mongodb://localhost:27017/scissor';
+if (!process.env.MONGO_URI) {
+    throw new Error('MONGO_URI environment variable is not set');
+}
+
+const MONGO_URI: string = process.env.MONGO_URI!;
 
 function connectToMongoDB(): Promise<void> {
     return new Promise((resolve, reject) => {

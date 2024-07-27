@@ -3,17 +3,17 @@ import { useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 
 const ShortUrlRedirect = () => {
-  const { shortUrlId } = useParams();
+  const { urlId } = useParams();
 
   useEffect(() => {
-    axiosInstance.get(`/api/${shortUrlId}`)
+    axiosInstance.get(`/api/${urlId}`)
       .then(response => {
         window.location.href = response.data.longUrl;
       })
       .catch(error => {
         console.error('Error redirecting:', error);
       });
-  }, [shortUrlId]);
+  }, [urlId]);
 
   return null;
 };

@@ -19,13 +19,20 @@ export interface IUrl extends Document {
   timestamp: Date;
 }
 
+//Mongoose schema for Clicks
+const clickSchema = new Schema<IClick>({
+  origin: String,
+  timestamp: { type: Date, default: Date.now },
+  count: Number,
+});
+
 //Mongoose schema for URL
-const urlSchema: Schema = new Schema({
+const urlSchema: Schema = new Schema<IUrl>({
   longUrl: { type: String, required: true },
   shortUrl: { type: String, required: true, unique: true },
   urlId: { type: String, unique: true },
   qrCode: { type: String, required: true },
-  clicks: { type: [{ origin: String, timestamp: Date, count: Number }], default: [] },
+  clicks: { type: [clickSchema], default: [] },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   timestamp: { type: Date, default: Date.now },
 });

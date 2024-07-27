@@ -99,9 +99,13 @@ export const deleteUrl = async (
   req: AuthenticatedRequest,
   res: Response
 ): Promise<void> => {
-  const { urlId } = req.params;
-  const userId = (req.user as any)._id;
+  const { urlId } = req.params;  
   try {
+    const userId = (req.user as IUser)._id;
+    if (!userId) {
+      res.status(404).json({ error: "UserId not found" });
+      return;
+    }
     const result = await deleteShortUrl(urlId, userId);
     if (result) {
       res.status(200).json({ message: "URL deleted successfully" });
