@@ -43,7 +43,7 @@ export const redirectUrl = async (
     }
     const origin = req.get("referer") || "direct";
     await incrementClicks(urlId, origin);
-    res.redirect(302, url.longUrl);
+    res.redirect(url.longUrl);
   } catch (error: any) {
     console.error("Error redirecting:", error);
     res.status(500).json({ error: error.message });

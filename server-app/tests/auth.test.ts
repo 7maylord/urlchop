@@ -2,9 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { auth, AuthenticatedRequest } from '../src/middleware/auth';
+import User from '../src/models/user';
 
 // Load environment variables from .env file
 dotenv.config();
+
+// Mock the User model
+jest.mock('../src/models/user');
 
 describe('verifyToken middleware', () => {
   let req: Partial<AuthenticatedRequest>;
@@ -17,13 +21,20 @@ describe('verifyToken middleware', () => {
     next = jest.fn();
   });
 
-  it('should call next() if token is valid', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should call next() if token is valid', async () => {
     const token = jwt.sign({ _id: '123' }, process.env.JWT_SECRET as string);
     req.headers = { authorization: `Bearer ${token}` };
 
-    // @ts-ignore
-    auth(req as AuthenticatedRequest, res as Response, next);
+    // Mock the User.findById method
+    const mockUser = { _id: '123', username: 'testuser' };
+    (User.findById as jest.Mock).mockResolvedValue(mockUser);
 
+    // @ts-ignore
+    await auth(req as AuthenticatedRequest, res as Response, next);
     expect(next).toHaveBeenCalled();
      // Check if user exists before accessing _id
      const user = (req as AuthenticatedRequest).user;
@@ -35,21 +46,21 @@ describe('verifyToken middleware', () => {
     }
   });
 
-  it('should return 401 and error message if token is missing', () => {
+  it('should return 401 and error message if token is missing', async () => {
     // @ts-ignore
-    auth(req as Request, res as Response, next);
+    await auth(req as Request, res as Response, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Unauthorized: Missing token',
+      error: 'Unauthorized: Missing or invalid token',
     });
   });
 
-  it('should return 401 and error message if token is invalid', () => {
+  it('should return 401 and error message if token is invalid', async () => {
     req.headers = { authorization: 'Bearer invalidtoken' };
 
     // @ts-ignore
-    auth(req as Request, res as Response, next);
+    await auth(req as Request, res as Response, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
