@@ -22,7 +22,7 @@ const Navbar = () => {
             <>
               <Link to="/shorten" className="text-white mr-4 hover:text-gray-300">Shorten URL</Link>
               <Link to="/link-history" className="text-white mr-4 hover:text-gray-300">Link History</Link>
-              <Link to="/analytics" className="text-white mr-4 hover:text-gray-300">Analytics</Link>
+              <Link to="/analytics/:urlId" className="text-white mr-4 hover:text-gray-300">Analytics</Link>
               <button onClick={handleLogout} className="text-white hover:text-gray-300">Logout</button>
             </>
           ) : (

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
-import { IUrl } from '../types'
+import { IUrl } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 const LinkHistory = () => {
   const [links, setLinks] = useState<IUrl[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLinks = async () => {
@@ -49,7 +51,7 @@ const LinkHistory = () => {
     }
   };
 
-  const downloadQrCode = async (qrCodeUrl: string) => {
+const downloadQrCode = async (qrCodeUrl: string) => {
     try {
       const response = await fetch(qrCodeUrl);
       const blob = await response.blob();
@@ -104,6 +106,7 @@ const LinkHistory = () => {
       <table className="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
         <thead className="bg-gray-200">
           <tr>
+            <th className="px-4 py-2">URL ID</th>
             <th className="px-4 py-2">Short URL</th>
             <th className="px-4 py-2">Long URL</th>
             <th className="px-4 py-2">Clicks</th>
@@ -114,16 +117,21 @@ const LinkHistory = () => {
         <tbody>
           {links.map(link => (
             <tr key={link._id} className="border-t">
-              <td className="px-4 py-2 cursor-pointer text-blue-500 hover:underline"
+              <td className="px-4 py-2 text-center cursor-pointer text-blue-500 hover:underline"
+                onClick={() => navigate(`/analytics/${link.urlId}`)}
+              >
+                {link.urlId}
+              </td>
+              <td className="px-4 py-2 text-center cursor-pointer text-blue-500 hover:underline"
                 onClick={() => window.open(link.shortUrl, '_blank')}
               >
                 {link.shortUrl}
               </td>
-              <td className="px-4 py-2">{link.longUrl}</td>
-              <td className="px-4 py-2">{link.clicks}</td>
+              <td className="px-4 py-2 text-center">{link.longUrl}</td>
+              <td className="px-4 py-2 text-center">{Array.isArray(link.clicks) ? link.clicks.reduce((sum, click) => sum + click.count, 0) : 0}</td>
               <td className="px-4 py-2"><img src={link.qrCode} alt="QR Code" className="w-16 h-16 cursor-pointer" onClick={() => downloadQrCode(link.qrCode)} /></td>
-              <td className="px-4 py-2">
-                <div className="flex items-center space-x-2">
+              <td className="px-4 py-2 text-center">
+                <div className="flex items-center justify-center space-x-2">
                   <div
                     className="cursor-pointer px-2"
                     onClick={() => copyToClipboard(link.shortUrl)}
