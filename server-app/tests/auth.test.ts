@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { auth, AuthenticatedRequest } from '../middleware/auth';
-import User from '../models/user';
+import { auth, AuthenticatedRequest } from '../src/middleware/auth';
+import User from '../src/models/user';
 
 // Load environment variables from .env.test file
 dotenv.config({ path: '.env.test' });

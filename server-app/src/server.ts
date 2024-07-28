@@ -1,7 +1,6 @@
 require('dotenv').config();
-// import 'dotenv/config'
 import app from './app';
-import connectToMongoDB from './utils/connectMongoDb';
+import connectToMongoDB from './config/connectMongoDb';
 import keepAliveJob from './utils/keepawake';
 
 const PORT = parseInt(process.env.PORT as string) || 3030;

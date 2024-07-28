@@ -1,10 +1,10 @@
-# Scissor URL Shortener
+# UrlChop URL Shortener
 
-Brief is the new black. Scissor is a simple tool that makes URLs as short as possible. Inspired by the importance of brevity in today's world, Scissor aims to disrupt the URL-shortening industry and give competitors like bit.ly and ow.ly a run for their money within 2 years.
+Brief is the new black. UrlChop is a simple tool that makes URLs as short as possible. Inspired by the importance of brevity in today's world, UrlChop aims to disrupt the URL-shortening industry and give competitors like bit.ly and ow.ly a run for their money within 2 years.
 
 ## Features
 
-- **URL Shortening**: Paste a long URL into Scissor and get a shorter URL automatically generated.
+- **URL Shortening**: Paste a long URL into UrlChop and get a shorter URL automatically generated.
 - **Custom URLs**: Customize your shortened URLs to reflect your brand or content.
 - **QR Code Generation**: Generate QR codes for your shortened URLs and download them for use in promotional materials.
 - **Analytics**: Track the performance of your shortened URLs, including the number of clicks and their origins.
@@ -22,8 +22,8 @@ Brief is the new black. Scissor is a simple tool that makes URLs as short as pos
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/your-username/scissor-url-shortener.git
-   cd scissor-url-shortener
+   git clone https://github.com/7maylord/urlchop.git
+   cd urlchop
 
 2. Install dependencies:
     ```sh
@@ -41,7 +41,7 @@ Brief is the new black. Scissor is a simple tool that makes URLs as short as pos
     REDIS_HOST=localhost
     REDIS_PORT=6379
     REDIS_PASSWORD=your_redis_password
-    MONGODB_URI=mongodb://localhost:27017/blog
+    MONGODB_URI=mongodb://localhost:27017/urlchop
 
     # Rate limiter configuration
     RATE_LIMIT_WINDOW=15
@@ -57,7 +57,7 @@ Brief is the new black. Scissor is a simple tool that makes URLs as short as pos
     ```
 5. Start the Server:
     ```sh
-    npm run build
+    npm run start
     ```
 6. Development Mode: To run the server in development mode with hot-reloading.
     ```sh

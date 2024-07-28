@@ -1,9 +1,9 @@
 import request from 'supertest';
-import app from '../app';
-import User from '../models/user';
+import app from '../src/app';
+import User from '../src/models/user';
 import mongoose, { Types } from 'mongoose';
 import dotenv from 'dotenv';
-import connectToMongoDB from '../utils/connectMongoDb';
+import connectToMongoDB from '../src/config/connectMongoDb';
 
 // Load environment variables from .env.test file
 dotenv.config({ path: '.env.test' });

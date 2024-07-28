@@ -1,4 +1,4 @@
-import redisClient from './redisClient';
+import redisClient from '../config/redisClient';
 
 /**
  * Retrieves a cached URL by its key.
