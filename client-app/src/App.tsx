@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import Login from "./components/login";
-import Register from "./components/register";
-import ShortenUrl from "./components/shortenUrl";
-import LinkHistory from "./components/linkHistory";
-import Analytics from "./components/analytics";
-import NotFound from "./components/notFound";
-import Footer from "./components/footer";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import ShortenUrl from "./components/ShortenUrl";
+import LinkHistory from "./components/LinkHistory";
+import Analytics from "./components/Analytics";
+import NotFound from "./components/NotFound";
+import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 
 const App = () => {
