@@ -1,13 +1,13 @@
-import Cron from "croner";
-import axios from "axios";
+import cron from 'node-cron';
+import axios from 'axios';
 
 const url: string = process.env.BASE || ''; // replace with your server's URL
 
 const keepAliveJob = () => {
-  const date = new Date();
-  const time = date.toLocaleTimeString();
-  const job = Cron("*/5 * * * *", () => {
+  const job = cron.schedule('*/5 * * * *', () => {
     // Runs every 5 minutes
+    const date = new Date();
+    const time = date.toLocaleTimeString();
     axios
       .get(url)
       .then((response) => {
@@ -17,5 +17,9 @@ const keepAliveJob = () => {
         console.error("Error keeping server alive:", error.message);
       });
   });
+
+  // Start the job immediately
+  job.start();
 };
+
 export default keepAliveJob;

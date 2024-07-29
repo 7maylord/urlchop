@@ -1,5 +1,4 @@
 import mongoose, { Document, Schema } from 'mongoose';
-//import bcrypt from 'bcryptjs';
 
 // Interface representing the User document in MongoDB.
 export interface IUser extends Document {
