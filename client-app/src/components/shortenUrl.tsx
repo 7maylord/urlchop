@@ -65,6 +65,7 @@ const ShortenUrl = () => {
           Shorten URL
         </button>
         {shortUrl && <p className="mt-4 text-center">Short URL: {shortUrl}</p>}
+        {error && <p className="mt-4 text-center text-red-500">{error}</p>}
       </form>
     </div>
   );

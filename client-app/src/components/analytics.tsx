@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { useParams } from 'react-router-dom';
 import { IClick } from '../types';

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { User } from '../types';
 import config from '../config';
