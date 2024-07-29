@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import validUrl from "valid-url";
-import { check, validationResult } from "express-validator";
+import { check, ValidationError, validationResult } from "express-validator";
 
 // Validate URL
 export const validateUrl = (
@@ -27,9 +27,8 @@ export const validateRegister = [
     if (!errors.isEmpty()) {
       const extractedErrors = errors
         .array()
-        .map((err) => ({ field: (err as any).path, message: err.msg }));
+        .map((err: ValidationError) => ({ field: (err as any).path, message: err.msg }));
       return res.status(422).json({ errors: extractedErrors });
-      // return res.status(400).json({ errors: errors.array() });
     }
     next();
   },
