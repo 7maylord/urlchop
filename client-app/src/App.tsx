@@ -22,7 +22,7 @@ const App = () => {
             <Route path="/shorten" element={<ShortenUrl />} />
             <Route path="/link-history" element={<LinkHistory />} />
             <Route path="/analytics/:urlId" element={<Analytics />} />
-            <Route path="*" element={<NotFound />} /> {/* Catch-all route for 404 */}            
+            <Route path="*" element={<NotFound />} />            
           </Routes>
         </div>
       </Router>
