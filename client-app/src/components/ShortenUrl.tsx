@@ -6,12 +6,17 @@ const ShortenUrl = () => {
   const [customId, setCustomId] = useState('');
   const [shortUrl, setShortUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Login Required');
+        setTimeout(() => setError(null), 5000);
+        return;
+      }
+
       const response = await axiosInstance.post(
         '/url',
         { longUrl, customId },
@@ -20,10 +25,12 @@ const ShortenUrl = () => {
       setShortUrl(response.data.shortUrl);
       setError(null);
       copyShortUrl(response.data.shortUrl);
-      setLongUrl('');
+      setTimeout(() => setShortUrl(''), 5000);
+      setLongUrl('');      
     } catch (error) {      
       setError('Error creating short URL. Please try again.');
-      console.error('Error creating short URL:', error);
+      setTimeout(() => setError(null), 5000);
+      console.error('Error creating short URL:', error);      
     }
   };
 

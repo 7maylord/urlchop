@@ -15,7 +15,6 @@ const LinkHistory = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setLinks(response.data.urls);
-        console.log(response.data.urls)
       } catch (error) {
         console.error('Error fetching links:', error);
       }

@@ -4,8 +4,12 @@ import cors from "cors";
 import { corsOptions } from "./config/corsOptions";
 import urlRoutes from "./routes/urlRoutes";
 import authRoutes from "./routes/authRoutes";
+import docRoutes from "./routes/docRoute";
 
 const app = express();
+
+// Trust proxy headers
+app.set('trust proxy', 1);
 
 //middleware
 app.use(express.json());
@@ -16,6 +20,7 @@ app.use(rateLimiter);
 //routes
 app.use("/api", urlRoutes);
 app.use("/api/auth", authRoutes);
+app.use(docRoutes);
 
 // Test route to check server status
 app.get("/", (req, res) => {

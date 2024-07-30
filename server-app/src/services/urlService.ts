@@ -38,7 +38,7 @@ export const createShortUrl = async (
     urlId = customId; // Use customId if provided
   }
   const base = process.env.BASE; // Adjust this based on your application's base URL
-  const shortUrl = `${base}/api/${urlId}`;
+  const shortUrl = `${base}api/${urlId}`;
 
   // Generate QR code for the short URL
   const qrCode = await generateQrCode(shortUrl);

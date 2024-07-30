@@ -19,7 +19,7 @@ const Register = () => {
       setSuccess('Registration successful! Redirecting to shorten URL page...');
       setTimeout(() => {
         navigate('/shorten');
-      }, 2000);      
+      }, 1000);      
     } catch (error) {
       console.error('Error registering:', error);
       setError('Registration failed. Please try again.');

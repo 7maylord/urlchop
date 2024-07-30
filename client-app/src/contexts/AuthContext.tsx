@@ -5,6 +5,7 @@ import config from '../config';
 
 interface AuthContextProps {
   user: User | null;
+  isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   register: (username: string, email: string, password: string) => Promise<void>;
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

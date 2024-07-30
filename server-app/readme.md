@@ -64,7 +64,8 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
     npm run dev
     ```
 ## API Documentation
-The API is documented using OpenAPI. You can view the documentation at http://localhost:3000/api-docs after starting the server.
+The API is documented using Postman. You can view the documentation on Postman [here](https://www.postman.com/your-workspace/documentation/your-doc-id) or [http://localhost:3030/api-docs](http://localhost:3030/api-docs) after starting the server.
+
 
 # Available Scripts
 - npm start: Runs the compiled server.
