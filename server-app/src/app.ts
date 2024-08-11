@@ -10,7 +10,7 @@ import YAML from "yaml";
 
 const app = express();
 
-const file = fs.readFileSync("./openapi.yaml", "utf-8");
+const file = fs.readFileSync("./src/openapi.yaml", "utf-8");
 const swaggerDocument = YAML.parse(file);
 
 // Trust proxy headers
@@ -25,8 +25,10 @@ app.use(rateLimiter);
 //routes
 app.use("/api", urlRoutes);
 app.use("/api/auth", authRoutes);
+
 // Serve Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // Test route to check server status
 app.get("/", (req, res) => {
   res.send("Server is running");
