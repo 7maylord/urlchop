@@ -14,7 +14,7 @@ const file = fs.readFileSync("./openapi.yaml", "utf-8");
 const swaggerDocument = YAML.parse(file);
 
 // Trust proxy headers
-app.set('trust proxy', 1);
+//app.set('trust proxy', 1);
 
 //middleware
 app.use(express.json());
