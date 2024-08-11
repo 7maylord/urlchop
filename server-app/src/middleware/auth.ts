@@ -25,7 +25,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         // Find user by _id from decoded token
         const user = await User.findById({ _id: decoded._id });
         if (!user) {
-          return res.status(401).send({ error: "Not authenticated" });
+          return res.status(401).send({ error: "Unauthorized: Not authenticated" });
         }
         // Set user property on request
         (req as AuthenticatedRequest).user = user;

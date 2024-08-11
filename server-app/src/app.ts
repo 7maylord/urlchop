@@ -1,12 +1,17 @@
 import express, { Request, Response, NextFunction } from 'express';
+import fs from "fs";
 import rateLimiter from "./utils/rateLimiter";
-import cors from "cors";
-import { corsOptions } from "./config/corsOptions";
+//import cors from "cors";
+//import { corsOptions } from "./config/corsOptions";
 import urlRoutes from "./routes/urlRoutes";
 import authRoutes from "./routes/authRoutes";
-import docRoutes from "./routes/docRoute";
+import swaggerUi from 'swagger-ui-express';
+import YAML from "yaml";
 
 const app = express();
+
+const file = fs.readFileSync("./openapi.yaml", "utf-8");
+const swaggerDocument = YAML.parse(file);
 
 // Trust proxy headers
 app.set('trust proxy', 1);
@@ -14,14 +19,14 @@ app.set('trust proxy', 1);
 //middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors(corsOptions));
+//app.use(cors(corsOptions));
 app.use(rateLimiter);
 
 //routes
 app.use("/api", urlRoutes);
 app.use("/api/auth", authRoutes);
-app.use(docRoutes);
-
+// Serve Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Test route to check server status
 app.get("/", (req, res) => {
   res.send("Server is running");

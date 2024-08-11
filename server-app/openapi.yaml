@@ -1,0 +1,430 @@
+openapi: 3.0.3
+info:
+  title: UrlChop URL Shortener API
+  description: API for managing URL shortening, QR code generation, and analytics.
+  version: 1.0.0
+
+servers:
+  - url: https://uchop.onrender.com/api
+    description: Production Server
+
+tags:
+  - name: Authentication
+    description: Endpoints for user authentication
+  - name: URL
+    description: Endpoints for URL operations
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "user@example.com"
+                username:
+                  type: string
+                  example: "username123"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: "User created successfully"
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                      type: string
+        "400":
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User already exists"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Validation error"
+
+  /auth/login:
+    post:
+      summary: Login a user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "user@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        "200":
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: "User logged in successfully"
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                      type: string
+                  
+        "400":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid credentials"
+                    
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Validation error"
+
+  /url:
+    post:
+      summary: Create a shortened URL
+      tags:
+        - URL
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                longUrl:
+                  type: string
+                  example: "https://example.com"
+                customUrl:
+                  type: string
+                  example: "custom-slug"
+      responses:
+        "201":
+          description: URL shortened successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Url'
+                
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid URL"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized: Missing or Invalid token"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "UserId not found"
+        "409":
+          description: Custom Id already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Custom URL already exists"
+ 
+ 
+  /analytics/{urlId}:
+    get:
+      summary: Get analytics for a specific URL
+      tags:
+        - URL
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: urlId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: URL analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  totalClicks:
+                    type: integer
+                  uniqueClicks:
+                    type: integer
+                  clicksByCountry:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                  clicksByBrowser:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                      
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized: Missing or Invalid token"
+                    
+        "404":
+          description: URL not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "URL not found"
+                    
+  /history/{userId}:
+    get:
+      summary: Get shortend URL history for a specific User
+      tags:
+        - URL
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: URL analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Url'
+            
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized: Missing or Invalid token"
+                    
+        "404":
+          description: URL not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "URL not found"
+                    
+  /url/{urlId}:
+    delete:
+      summary: Delete a specific URL
+      tags:
+        - URL
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: urlId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: URL deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "URL deleted successfully"
+        
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized: Missing or Invalid token"
+        
+        "404":
+          description: URL not found or not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "URL not found or not authorized"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        urls:
+          type: array
+          items:
+            type: string
+            format: uuid
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - username
+        - email
+        - password
+        
+    Url:
+      type: object
+      properties:
+        _id:
+          type: string
+        shortUrl:
+          type: string
+        longUrl:
+          type: string
+        customId:
+          type: string
+        urlId:
+          type: string
+        qrCode:
+          type: string
+        clicks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Click'
+        createdBy:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+          example: '2024-08-11T12:34:56Z'
+      required:
+        - longUrl
+        - shortUrl
+        - urlId
+        - qrCode
+        - createdBy
+
+    Click:
+      type: object
+      properties:
+        origin:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        count:
+          type: integer
+        
+          
+

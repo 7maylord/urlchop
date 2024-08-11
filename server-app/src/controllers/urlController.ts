@@ -29,6 +29,7 @@ export const shortenUrl = async (
   }
 };
 
+
 //Controller for redirecting a short URL.
 export const redirectUrl = async (
   req: Request,
