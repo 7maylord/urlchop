@@ -145,7 +145,7 @@ paths:
                 longUrl:
                   type: string
                   example: "https://example.com"
-                customUrl:
+                customId:
                   type: string
                   example: "custom-slug"
       responses:

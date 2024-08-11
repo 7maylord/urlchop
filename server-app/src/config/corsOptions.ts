@@ -14,5 +14,8 @@ export const corsOptions: cors.CorsOptions = {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  optionsSuccessStatus: 200
+  credentials: true, // Enable Access-Control-Allow-Credentials
+  optionsSuccessStatus: 200,
+  exposedHeaders: ['Content-Length', 'ETag', 'Link', 'X-RateLimit-Limit', 'X-RateLimit-Remaining'], // Access-Control-Expose-Headers
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], // Access-Control-Allow-Headers
 };
