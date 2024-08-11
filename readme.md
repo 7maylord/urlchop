@@ -26,7 +26,9 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
 ### API
 
 - Backend is deployed at [uchop.onrender.com](https://uchop.onrender.com)
-- Deployed documentation is at [uchop.onrender.com/api/docs](https://uchop.onrender.com/api/docs)
+- Deployed documentation is at [uchop.onrender.com/api-docs](https://uchop.onrender.com/api-docs)
+
+
 ## Setup and Installation
 
 1. **Clone the Repository**
@@ -89,7 +91,7 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
     ```
 
 ## API Documentation
-The API is documented using OpenAPI. You can view the documentation on [http://localhost:3030/api/docs](http://localhost:3030/api/docs) after starting the server.
+The API is documented using OpenAPI. You can view the documentation on [http://localhost:3030/api-docs](http://localhost:3030/api-docs) after starting the server.
 
 
 # Available Scripts
