@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import fs from "fs";
 import rateLimiter from "./utils/rateLimiter";
-//import cors from "cors";
-//import { corsOptions } from "./config/corsOptions";
+import cors from "cors";
+import { corsOptions } from "./config/corsOptions";
 import urlRoutes from "./routes/urlRoutes";
 import authRoutes from "./routes/authRoutes";
 import swaggerUi from 'swagger-ui-express';
@@ -14,12 +14,12 @@ const file = fs.readFileSync("./src/openapi.yaml", "utf-8");
 const swaggerDocument = YAML.parse(file);
 
 // Trust proxy headers
-//app.set('trust proxy', 1);
+app.set('trust proxy', 1);
 
 //middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-//app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(rateLimiter);
 
 //routes
