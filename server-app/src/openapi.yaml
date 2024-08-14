@@ -51,7 +51,7 @@ paths:
                     $ref: '#/components/schemas/User'
                   token:
                       type: string
-        "400":
+        "409":
           description: User already exists
           content:
             application/json:
@@ -68,10 +68,24 @@ paths:
               schema:
                 type: object
                 properties:
+                  field:
+                    type: string
+                    description: The name of the field that caused the validation error
+                    example: "username"
                   message:
                     type: string
-                    example: "Validation error"
-
+                    description: The validation error message
+                    example: "Username is required"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
   /auth/login:
     post:
       summary: Login a user
@@ -124,9 +138,60 @@ paths:
               schema:
                 type: object
                 properties:
+                  field:
+                    type: string
+                    description: The name of the field that caused the validation error
+                    example: "username"
                   message:
                     type: string
-                    example: "Validation error"
+                    description: The validation error message
+                    example: "Username is required"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
+  /auth/me:
+    get:
+      summary: Gets the current user
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/User'
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Not authenticated"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
 
   /url:
     post:
@@ -195,8 +260,17 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Custom URL already exists"
- 
+                    example: "Custom Id already exists"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
  
   /analytics/{urlId}:
     get:
@@ -211,28 +285,16 @@ paths:
           required: true
           schema:
             type: string
+            example: "customId"
       responses:
         "200":
           description: URL analytics retrieved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  totalClicks:
-                    type: integer
-                  uniqueClicks:
-                    type: integer
-                  clicksByCountry:
-                    type: object
-                    additionalProperties:
-                      type: integer
-                  clicksByBrowser:
-                    type: object
-                    additionalProperties:
-                      type: integer
+                type: array
+                items:
+                  $ref: '#/components/schemas/Click'
                       
         "401":
           description: Unauthorized
@@ -255,10 +317,20 @@ paths:
                   message:
                     type: string
                     example: "URL not found"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
                     
   /history/{userId}:
     get:
-      summary: Get shortend URL history for a specific User
+      summary: Get shortened URL history for a specific User
       tags:
         - URL
       security:
@@ -291,7 +363,7 @@ paths:
                     example: "Unauthorized: Missing or Invalid token"
                     
         "404":
-          description: URL not found
+          description: User not found
           content:
             application/json:
               schema:
@@ -299,8 +371,17 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "URL not found"
-                    
+                    example: "User not found"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"           
   /url/{urlId}:
     delete:
       summary: Delete a specific URL
@@ -347,7 +428,16 @@ paths:
                   message:
                     type: string
                     example: "URL not found or not authorized"
-
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
 components:
   securitySchemes:
     bearerAuth:
