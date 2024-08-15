@@ -8,6 +8,7 @@ const PORT = parseInt(process.env.PORT as string) || 3030;
 connectToMongoDB()
     .then(() => {
         console.log('Connected to MongoDB');
+        //keepAliveJob();
         // Start the server
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);

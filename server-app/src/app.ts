@@ -1,7 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import fs from "fs";
 import rateLimiter from "./utils/rateLimiter";
-//import cors from "cors";
+import helmet from "helmet";
+import cors from "cors";
 //import { corsOptions } from "./config/corsOptions";
 import urlRoutes from "./routes/urlRoutes";
 import authRoutes from "./routes/authRoutes";
@@ -17,8 +18,10 @@ const swaggerDocument = YAML.parse(file);
 //app.set('trust proxy', 1);
 
 //middleware
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors())
 //app.use(cors(corsOptions));
 app.use(rateLimiter);
 
