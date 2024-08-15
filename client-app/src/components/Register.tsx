@@ -22,11 +22,17 @@ const Register = () => {
       }, 1000);      
     } catch (error) {
       console.error('Error registering:', error);
-      setError('Registration failed. Please try again.');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (error instanceof Error && (error as any).response && (error as any).response.status === 409) {
+        setError('User already exists. Please try a different email.');
+    } else {
+        setError('Registration failed. Please try again.');
+    }
       setSuccess(null);
       setUsername('');
       setEmail('');
       setPassword('');
+      setTimeout(() => setError(null), 3000);
     }
   };
 

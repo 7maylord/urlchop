@@ -25,11 +25,12 @@ const ShortenUrl = () => {
       setShortUrl(response.data.shortUrl);
       setError(null);
       copyShortUrl(response.data.shortUrl);
-      setTimeout(() => setShortUrl(''), 5000);
-      setLongUrl('');      
+      setTimeout(() => setShortUrl(''), 3000);
+      setLongUrl('');  
+      setCustomId('');     
     } catch (error) {      
       setError('Error creating short URL. Please try again.');
-      setTimeout(() => setError(null), 5000);
+      setTimeout(() => setError(null), 3000);
       console.error('Error creating short URL:', error);      
     }
   };
