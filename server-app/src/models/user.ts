@@ -6,7 +6,7 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
-  urls: Schema.Types.ObjectId[];
+  urls: mongoose.Types.ObjectId[];
   timestamp: Date;
 }
 

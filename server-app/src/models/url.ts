@@ -21,9 +21,9 @@ export interface IUrl extends Document {
 
 //Mongoose schema for Clicks
 const clickSchema = new Schema<IClick>({
-  origin: String,
+  origin: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
-  count: Number,
+  count: { type: Number, required: true },
 });
 
 //Mongoose schema for URL
