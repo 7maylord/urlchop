@@ -94,11 +94,11 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
 The API is documented using OpenAPI. You can view the documentation on [http://localhost:3030/api-docs](http://localhost:3030/api-docs) after starting the server.
 
 
-# Available Scripts
+## Available Scripts
 - npm start: Runs the compiled server.
 - npm run dev: Runs the server in development mode using ts-node-dev.
 - npm run build: Compiles the TypeScript code.
 - npm test: Runs the tests.
 
-# Contributing
+## Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any changes.

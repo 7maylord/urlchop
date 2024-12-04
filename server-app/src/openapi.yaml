@@ -271,7 +271,49 @@ paths:
                   message:
                     type: string
                     example: "Internal Server Error"
- 
+  /{urlId}:
+    get:
+      summary: Redirects to a long URL based on URL ID
+      tags:
+        - URL
+      description: Retrieves the long URL associated with the provided URL ID, increments click count, and redirects to the long URL.
+      parameters:
+        - name: urlId
+          in: path
+          description: The unique identifier for the URL.
+          required: true
+          schema:
+            type: string
+            example: "customId"
+      responses:
+        '302':
+          description: Redirects to the long URL
+          headers:
+            Location:
+              description: The URL to which the client is redirected
+              schema:
+                type: string
+                format: uri
+        '404':
+          description: URL not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "URL not found"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
   /analytics/{urlId}:
     get:
       summary: Get analytics for a specific URL
