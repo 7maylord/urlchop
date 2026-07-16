@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 
-if (!process.env.MONGO_URI) {
-    throw new Error('MONGO_URI environment variable is not set');
-}
-
-const MONGO_URI: string = process.env.MONGO_URI!;
-
 function connectToMongoDB(): Promise<void> {
+    const MONGO_URI = process.env.MONGO_URI;
+    if (!MONGO_URI) {
+        return Promise.reject(
+            new Error('MONGO_URI environment variable is not set')
+        );
+    }
+
     return new Promise((resolve, reject) => {
         mongoose.connect(MONGO_URI);
 
@@ -14,13 +15,12 @@ function connectToMongoDB(): Promise<void> {
             console.log('MongoDB connection successful');
             resolve();
         });
-    
+
         mongoose.connection.on('error', (err) => {
             console.error(err);
             console.log('MongoDB connection unsuccessful');
             reject(err);
         });
     });
-    
 }
 export default connectToMongoDB;

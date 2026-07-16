@@ -16,7 +16,7 @@ export const shortenUrl = async (
 ): Promise<void> => {
   const { longUrl, customId } = req.body;
   try {
-    const userId = (req.user as IUser)._id;
+    const userId = (req.user as IUser)._id.toString();
     if (!userId) {
       res.status(404).json({ error: "UserId not found" });
       return;
@@ -24,6 +24,13 @@ export const shortenUrl = async (
     const url = await createShortUrl(longUrl, userId, customId);
     res.status(201).json(url);
   } catch (error: any) {
+    // Custom id clash (pre-check) or a race that hits the unique index (E11000).
+    if (error?.message === "Custom ID already taken" || error?.code === 11000) {
+      res
+        .status(409)
+        .json({ error: "That custom ID is already taken. Try another one." });
+      return;
+    }
     console.error("Error creating shortUrl:", error);
     res.status(500).json({ error: error.message });
   }
@@ -35,7 +42,7 @@ export const redirectUrl = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { urlId } = req.params;
+  const urlId = String(req.params.urlId);
   try {
     const url = await getUrl(urlId); // Retrieve the URL from the service
     if (!url) {
@@ -56,9 +63,9 @@ export const getUrlAnalytics = async (
   req: AuthenticatedRequest,
   res: Response
 ): Promise<void> => {
-  const { urlId } = req.params;
+  const urlId = String(req.params.urlId);
   try {
-    const userId = (req.user as IUser)._id;
+    const userId = (req.user as IUser)._id.toString();
     if (!userId) {
       res.status(404).json({ error: "UserId not found" });
       return;
@@ -81,7 +88,7 @@ export const getUserLinkHistory = async (
   res: Response
 ): Promise<void> => {
   try {
-    const userId = (req.user as IUser)._id;
+    const userId = (req.user as IUser)._id.toString();
     const user = await User.findById(userId).populate("urls");
 
     if (!user) {
@@ -100,9 +107,9 @@ export const deleteUrl = async (
   req: AuthenticatedRequest,
   res: Response
 ): Promise<void> => {
-  const { urlId } = req.params;  
+  const urlId = String(req.params.urlId);  
   try {
-    const userId = (req.user as IUser)._id;
+    const userId = (req.user as IUser)._id.toString();
     if (!userId) {
       res.status(404).json({ error: "UserId not found" });
       return;

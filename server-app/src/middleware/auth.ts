@@ -22,8 +22,8 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
           _id: string;
         };
-        // Find user by _id from decoded token
-        const user = await User.findById({ _id: decoded._id });
+        // Find user by _id from decoded token (never load the password hash)
+        const user = await User.findById(decoded._id, "-password");
         if (!user) {
           return res.status(401).send({ error: "Unauthorized: Not authenticated" });
         }
