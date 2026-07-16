@@ -12,7 +12,7 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
 
 ## Requirements
 
-- Node.js >= 20 and [pnpm](https://pnpm.io) (this is a pnpm workspace)
+- Node.js >= 20 and [pnpm](https://pnpm.io). `client-app` and `server-app` are independent pnpm projects — install and run each from its own directory.
 -   **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4
 -   **Backend**: Node.js, TypeScript, Express 5, MongoDB (Mongoose), and Redis
 -   **Deployment**: Vercel (client) / Render (server)
@@ -37,9 +37,10 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
    git clone https://github.com/7maylord/urlchop.git
    cd urlchop
 
-2. Install dependencies (once, from the repo root — installs both apps):
+2. Install dependencies (each app separately):
     ```sh
-    pnpm install
+    cd client-app && pnpm install
+    cd ../server-app && pnpm install
     ```
 
 3. Set up environment variables:
@@ -76,30 +77,32 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
     VITE_APP_URL=http://localhost:5174       # frontend server
     ```
 
-4. Run in development (from the repo root):
+4. Run in development (each app in its own terminal):
     ```sh
-    pnpm dev          # runs client + server together
-    pnpm dev:server   # backend only (ts-node-dev, hot reload)
-    pnpm dev:client   # frontend only (Vite)
+    # server-app
+    pnpm dev   # ts-node-dev, hot reload
+
+    # client-app
+    pnpm dev   # Vite
     ```
 
-5. Build and test (from the repo root):
+5. Build and test (from each app's directory):
     ```sh
-    pnpm build        # builds both apps
-    pnpm test         # runs the server test suite
-    pnpm lint         # lints the client
+    pnpm build   # server-app or client-app
+    pnpm test    # server-app only
+    pnpm lint    # client-app only
     ```
 
 ## API Documentation
 The API is documented using OpenAPI. You can view the documentation on [http://localhost:3030/api-docs](http://localhost:3030/api-docs) after starting the server.
 
 
-## Available Scripts (run from the repo root)
-- `pnpm dev`: Runs the client and server together.
-- `pnpm dev:server` / `pnpm dev:client`: Runs one app in development mode.
-- `pnpm build`: Builds both apps.
-- `pnpm test`: Runs the server test suite.
-- `pnpm lint`: Lints the client.
+## Available Scripts
+Run these from inside `client-app` or `server-app` respectively:
+- `pnpm dev`: Runs the app in development mode (hot reload).
+- `pnpm build`: Builds the app.
+- `pnpm test` (server-app): Runs the test suite.
+- `pnpm lint` (client-app): Lints the code.
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any changes.

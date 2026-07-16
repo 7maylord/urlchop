@@ -75,7 +75,7 @@ describe('Auth Controller Tests', () => {
     await request(app)
       .post('/api/auth/register')
       .send(testUser)
-      .expect(400)
+      .expect(409)
       .then((res) => {
         expect(res.body).toHaveProperty('error', 'User already exists');
       });
