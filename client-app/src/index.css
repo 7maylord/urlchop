@@ -1,3 +1,81 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* ── "Chop" design tokens ─────────────────────────────────────────────
+   Brief is the new black. Type carries the identity: Space Grotesk for
+   display, JetBrains Mono for every URL/slug/number, Inter for body.
+   One accent — electric indigo — on warm paper. */
+@theme {
+  --font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --color-paper: #fbfbfa;
+  --color-ink: #141417;
+  --color-muted: #6e6e73;
+  --color-line: #e6e6e2;
+  --color-accent: #3b37ff;
+  --color-accent-hover: #2a26e0;
+  --color-danger: #e5484d;
+}
+
+@layer base {
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .uc-input {
+    @apply w-full rounded-md border border-line bg-white px-4 py-3 font-mono text-sm text-ink
+           placeholder:text-muted/60 transition
+           focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20;
+  }
+  .uc-label {
+    @apply mb-2 block text-xs font-medium uppercase tracking-[0.14em] text-muted;
+  }
+  .uc-btn-accent {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-medium
+           transition disabled:cursor-not-allowed disabled:opacity-50
+           bg-accent text-white hover:bg-accent-hover;
+  }
+  .uc-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-medium
+           transition disabled:cursor-not-allowed disabled:opacity-50
+           border border-line bg-white text-ink hover:border-ink/40;
+  }
+  .uc-card {
+    @apply rounded-xl border border-line bg-white;
+  }
+}
+
+@layer utilities {
+  @keyframes uc-chop-in {
+    0% {
+      opacity: 0;
+      transform: translateY(6px);
+      clip-path: inset(0 100% 0 0);
+    }
+    60% {
+      clip-path: inset(0 0 0 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .uc-chop-in {
+    animation: uc-chop-in 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .uc-chop-in {
+      animation: none;
+    }
+  }
+}

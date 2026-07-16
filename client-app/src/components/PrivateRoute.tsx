@@ -6,7 +6,7 @@ interface PrivateRouteProps {
   redirectPath?: string;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ redirectPath = '/404' }) => {
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ redirectPath = '/login' }) => {
   const { user } = useAuth();
   const location = useLocation();
 

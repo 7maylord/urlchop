@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -6,75 +7,85 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { register } = useAuth();
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();  
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
     try {
       await register(username, email, password);
-      setError(null);
-      setSuccess('Registration successful! Redirecting to shorten URL page...');
-      setTimeout(() => {
-        navigate('/shorten');
-      }, 1000);      
-    } catch (error) {
-      console.error('Error registering:', error);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (error instanceof Error && (error as any).response && (error as any).response.status === 409) {
-        setError('User already exists. Please try a different email.');
-    } else {
+      navigate('/shorten');
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
+        setError('That email is already registered. Try logging in instead.');
+      } else {
         setError('Registration failed. Please try again.');
-    }
-      setSuccess(null);
-      setUsername('');
-      setEmail('');
-      setPassword('');
-      setTimeout(() => setError(null), 3000);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen mt-8 md:mt-12 bg-gray-100">
-      <form onSubmit={handleRegister} className="bg-white p-6 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+    <section className="mx-auto flex max-w-sm flex-col px-5 py-16 sm:py-24">
+      <h1 className="font-display text-3xl font-bold tracking-tight">Create your account</h1>
+      <p className="mt-2 text-muted">It takes a second — then start chopping links.</p>
+
+      <form onSubmit={handleRegister} className="mt-8 uc-card p-6">
+        <label htmlFor="username" className="uc-label">Username</label>
         <input
+          id="username"
           type="text"
-          placeholder="Username"
+          placeholder="maylord"
           value={username}
-          onChange={e => setUsername(e.target.value)}
-          className="mb-4 w-full p-3 border rounded"
+          onChange={(e) => setUsername(e.target.value)}
+          className="uc-input"
           required
         />
+
+        <label htmlFor="email" className="uc-label mt-5">Email</label>
         <input
+          id="email"
           type="email"
-          placeholder="Email"
+          placeholder="you@example.com"
           value={email}
-          onChange={e => setEmail(e.target.value)}
-          className="mb-4 w-full p-3 border rounded"
+          onChange={(e) => setEmail(e.target.value)}
+          className="uc-input"
           required
         />
+
+        <label htmlFor="password" className="uc-label mt-5">Password</label>
         <input
+          id="password"
           type="password"
-          placeholder="Password"
+          placeholder="At least 6 characters"
           value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="mb-4 w-full p-3 border rounded"
+          onChange={(e) => setPassword(e.target.value)}
+          className="uc-input"
+          minLength={6}
           required
         />
-        {success && <p className="text-green-500 text-center mb-4">{success}</p>}
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        <button 
-          type="submit" 
-          className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600" 
-          >
-          Register
+
+        {error && (
+          <p className="mt-5 rounded-md border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger" role="alert">
+            {error}
+          </p>
+        )}
+
+        <button type="submit" disabled={loading} className="mt-6 uc-btn-accent w-full">
+          {loading ? 'Creating account…' : 'Create account'}
         </button>
-        <p className= "text-left pb-2 text-1xl font-extralight">If you have an existing account, click <Link className= "font-normal" to={"/login"}>here</Link> to login.</p>
       </form>
-    </div>
+
+      <p className="mt-5 text-center text-sm text-muted">
+        Already have an account?{' '}
+        <Link to="/login" className="font-medium text-accent hover:underline">Log in</Link>.
+      </p>
+    </section>
   );
 };
 

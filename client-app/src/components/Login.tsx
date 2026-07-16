@@ -6,64 +6,69 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
     try {
       await login(email, password);
-      setError(null);
-      setSuccess('Login successful! Redirecting to shorten URL page...');
-      setTimeout(() => {
-        navigate('/shorten');
-      }, 1000); // Redirect after 1 seconds
-    } catch (error) {
-      console.error('Error logging in:', error);
-      setError('Login failed. Please try again.');
-      setSuccess(null);
-      setEmail('');
+      navigate('/shorten');
+    } catch {
+      setError('Login failed. Check your email and password.');
       setPassword('');
+    } finally {
+      setLoading(false);
     }
   };
 
-    return (
-    <div className="flex flex-col items-center min-h-screen mt-8 md:mt-12 bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-6 rounded shadow-md w-full max-w-sm"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+  return (
+    <section className="mx-auto flex max-w-sm flex-col px-5 py-16 sm:py-24">
+      <h1 className="font-display text-3xl font-bold tracking-tight">Welcome back</h1>
+      <p className="mt-2 text-muted">Log in to shorten links and see their stats.</p>
+
+      <form onSubmit={handleLogin} className="mt-8 uc-card p-6">
+        <label htmlFor="email" className="uc-label">Email</label>
         <input
+          id="email"
           type="email"
-          placeholder="Email"
+          placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mb-4 w-full p-3 border rounded"
+          className="uc-input"
           required
         />
+
+        <label htmlFor="password" className="uc-label mt-5">Password</label>
         <input
+          id="password"
           type="password"
-          placeholder="Password"
+          placeholder="••••••••"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mb-4 w-full p-3 border rounded"
+          className="uc-input"
           required
         />
-        {success && (
-          <p className="text-green-500 text-center mb-4">{success}</p>
+
+        {error && (
+          <p className="mt-5 rounded-md border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger" role="alert">
+            {error}
+          </p>
         )}
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600"
-        >
-          Login
+
+        <button type="submit" disabled={loading} className="mt-6 uc-btn-accent w-full">
+          {loading ? 'Logging in…' : 'Log in'}
         </button>
-        <p className= "text-left pb-2 text-1xl font-extralight">If you do not have an existing account, create an account <Link className= "font-normal" to={"/register"}>here</Link>.</p>
-      </form>    
-    </div>
+      </form>
+
+      <p className="mt-5 text-center text-sm text-muted">
+        No account yet?{' '}
+        <Link to="/register" className="font-medium text-accent hover:underline">Create one</Link>.
+      </p>
+    </section>
   );
 };
 
