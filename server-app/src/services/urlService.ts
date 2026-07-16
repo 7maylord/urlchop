@@ -16,8 +16,11 @@ export const createShortUrl = async (
   userId: string,
   customId?: string
 ): Promise<IUrl> => {
+  // Cache key is scoped per user so one user's short URL is never served to another.
+  const cacheKey = `url:${userId}:${longUrl}`;
+
   // Check if URL is already cached
-  const cachedUrl = await cacheGet(longUrl);
+  const cachedUrl = await cacheGet(cacheKey);
   if (cachedUrl) {
     return JSON.parse(cachedUrl);
   }
@@ -25,7 +28,7 @@ export const createShortUrl = async (
   // Check if URL already exists in database
   let url = await Url.findOne({ longUrl, createdBy: userId });
   if (url) {
-    await cacheSet(longUrl, JSON.stringify(url), 3600);
+    await cacheSet(cacheKey, JSON.stringify(url), 3600);
     return url;
   }
 
@@ -35,10 +38,16 @@ export const createShortUrl = async (
   if (!customId) {
     urlId = nanoid(7); // Generate a random ID of length 7
   } else {
+    // Reject a custom id that is already taken so the caller gets a clean 409.
+    const taken = await Url.findOne({ urlId: customId });
+    if (taken) {
+      throw new Error("Custom ID already taken");
+    }
     urlId = customId; // Use customId if provided
   }
-  const base = process.env.BASE; // Adjust this based on your application's base URL
-  const shortUrl = `${base}api/${urlId}`;
+  // Normalise the base URL so we always get exactly one slash before /api.
+  const base = (process.env.BASE || "").replace(/\/+$/, "");
+  const shortUrl = `${base}/api/${urlId}`;
 
   // Generate QR code for the short URL
   const qrCode = await generateQrCode(shortUrl);
@@ -56,7 +65,7 @@ export const createShortUrl = async (
   // Update user's urls array
   await User.findByIdAndUpdate(userId, { $push: { urls: url._id } });
   // Cache the URL
-  await cacheSet(longUrl, JSON.stringify(url), 3600);
+  await cacheSet(cacheKey, JSON.stringify(url), 3600);
   return url;
 };
 
@@ -133,7 +142,7 @@ export const deleteShortUrl = async (
   const url = await Url.findOneAndDelete({ urlId, createdBy: userId });
   if (url) {
     await cacheDel(urlId);
-    await cacheDel(url.longUrl);
+    await cacheDel(`url:${userId}:${url.longUrl}`);
     return true;
   }
   return false;
