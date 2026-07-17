@@ -15,7 +15,7 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
 - Node.js >= 20 and [pnpm](https://pnpm.io). `client-app` and `server-app` are independent pnpm projects — install and run each from its own directory.
 -   **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4
 -   **Backend**: Node.js, TypeScript, Express 5, MongoDB (Mongoose), and Redis
--   **Deployment**: Vercel (client) / Render (server)
+-   **Deployment**: Vercel (client) / Railway (server)
 
 ## Usage
 
@@ -25,8 +25,8 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
 
 ### API
 
-- Backend is deployed at [uchop.onrender.com](https://uchop.onrender.com)
-- Deployed documentation is at [uchop.onrender.com/api-docs](https://uchop.onrender.com/api-docs)
+- Backend is deployed at [uchop.up.railway.app](https://uchop.up.railway.app)
+- Deployed documentation is at [uchop.up.railway.app/api-docs](https://uchop.up.railway.app/api-docs)
 
 
 ## Setup and Installation
