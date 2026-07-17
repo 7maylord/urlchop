@@ -68,6 +68,18 @@ describe('Auth Controller Tests', () => {
         expect(res.body).toHaveProperty('message', 'User created successfully');
         expect(res.body).toHaveProperty('token');
         expect(res.body.user).toHaveProperty('_id');
+        expect(res.body.user).not.toHaveProperty('password');
+      });
+  });
+
+  it('should reject registration with invalid input', async () => {
+    await request(app)
+      .post('/api/auth/register')
+      .send({ username: '', email: 'not-an-email', password: '123' })
+      .expect(422)
+      .then((res) => {
+        expect(res.body).toHaveProperty('errors');
+        expect(res.body.errors.length).toBeGreaterThan(0);
       });
   });
 
@@ -107,6 +119,7 @@ describe('Auth Controller Tests', () => {
         expect(res.body).toHaveProperty('token');
         expect(res.body.user).toHaveProperty('_id');
         expect(res.body.user.email).toBe(testUser.email);
+        expect(res.body.user).not.toHaveProperty('password');
         token = res.body.token;
       });
   });
@@ -119,11 +132,63 @@ describe('Auth Controller Tests', () => {
       .then((res) => {
         expect(res.body).toHaveProperty('_id', userId);
         expect(res.body).toHaveProperty('email', testUser.email);
+        expect(res.body).not.toHaveProperty('password');
       });
   });
 });
 
 describe('URL Controller Tests', () => {
+  it('should reject shortening without auth', async () => {
+    await request(app)
+      .post('/api/url')
+      .send({ longUrl: 'http://example.com' })
+      .expect(401);
+  });
+
+  it('should reject an invalid URL', async () => {
+    await request(app)
+      .post('/api/url')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ longUrl: 'not-a-url' })
+      .expect(400)
+      .then((res) => {
+        expect(res.body).toHaveProperty('message', 'Invalid URL');
+      });
+  });
+
+  it('should reject a custom ID that is already taken', async () => {
+    await request(app)
+      .post('/api/url')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ longUrl: 'http://first.example.com', customId: 'dupe-slug' })
+      .expect(201);
+
+    await request(app)
+      .post('/api/url')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ longUrl: 'http://second.example.com', customId: 'dupe-slug' })
+      .expect(409);
+  });
+
+  it('should 404 on redirect for an unknown short URL', async () => {
+    await request(app)
+      .get('/api/does-not-exist')
+      .expect(404)
+      .then((res) => {
+        expect(res.body).toHaveProperty('error', 'URL not found');
+      });
+  });
+
+  it('should 404 when deleting a URL that does not exist', async () => {
+    await request(app)
+      .delete('/api/url/does-not-exist')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(404)
+      .then((res) => {
+        expect(res.body).toHaveProperty('error', 'URL not found or not authorized');
+      });
+  });
+
   it('should shorten a URL', async () => {
     await request(app)
       .post('/api/url')
