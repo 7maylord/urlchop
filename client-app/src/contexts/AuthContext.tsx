@@ -1,17 +1,7 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { User } from '../types';
-import config from '../config';
-
-interface AuthContextProps {
-  user: User | null;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  register: (username: string, email: string, password: string) => Promise<void>;
-}
-
-export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+import { AuthContext } from './auth-context';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -20,9 +10,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem('token');
     if (token) {
       axiosInstance
-        .get('/auth/me', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        .get('/auth/me')
         .then((response) => {
           setUser(response.data);
         })
@@ -33,7 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await axiosInstance.post(`${config.Api.baseUrl}/auth/login`, { email, password });
+    const response = await axiosInstance.post('/auth/login', { email, password });
     localStorage.setItem('token', response.data.token);
     setUser(response.data.user);
   };
@@ -44,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const register = async (username: string, email: string, password: string) => {
-    const response = await axiosInstance.post(`${config.Api.baseUrl}/auth/register`, { username, email, password });
+    const response = await axiosInstance.post('/auth/register', { username, email, password });
     localStorage.setItem('token', response.data.token);
     setUser(response.data.user);
   };
@@ -55,5 +43,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </AuthContext.Provider>
   );
 };
-
-export type { AuthContextProps };

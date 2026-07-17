@@ -1,3 +1,197 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* ── "Chop" design tokens ─────────────────────────────────────────────
+   Brief is the new black. Type carries the identity: Space Grotesk for
+   display, JetBrains Mono for every URL/slug/number, Inter for body.
+   One accent — electric indigo — on warm paper. */
+@theme {
+  --font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --color-paper: #fbfbfa;
+  --color-ink: #141417;
+  --color-muted: #6e6e73;
+  --color-line: #e6e6e2;
+  --color-accent: #3b37ff;
+  --color-accent-hover: #2a26e0;
+  --color-danger: #e5484d;
+
+  /* brushed-steel gradient for the shears in the landing hero */
+  --color-steel: #c7cbd1;
+  --color-steel-dark: #6b6e76;
+}
+
+@layer base {
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .uc-input {
+    @apply w-full rounded-md border border-line bg-white px-4 py-3 font-mono text-sm text-ink
+           placeholder:text-muted/60 transition
+           focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20;
+  }
+  .uc-label {
+    @apply mb-2 block text-xs font-medium uppercase tracking-[0.14em] text-muted;
+  }
+  .uc-btn-accent {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-medium
+           transition disabled:cursor-not-allowed disabled:opacity-50
+           bg-accent text-white hover:bg-accent-hover;
+  }
+  .uc-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-medium
+           transition disabled:cursor-not-allowed disabled:opacity-50
+           border border-line bg-white text-ink hover:border-ink/40;
+  }
+  .uc-card {
+    @apply rounded-xl border border-line bg-white;
+  }
+}
+
+@layer utilities {
+  @keyframes uc-chop-in {
+    0% {
+      opacity: 0;
+      transform: translateY(6px);
+      clip-path: inset(0 100% 0 0);
+    }
+    60% {
+      clip-path: inset(0 0 0 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .uc-chop-in {
+    animation: uc-chop-in 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  @keyframes uc-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .uc-fade-up {
+    animation: uc-fade-up 560ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  /* pair with an inline `style={{ '--i': index }}` to stagger a list */
+  .uc-stagger {
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+
+  @keyframes uc-shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  .uc-shimmer {
+    background: linear-gradient(90deg, var(--color-line) 25%, #f2f2ee 37%, var(--color-line) 63%);
+    background-size: 400% 100%;
+    animation: uc-shimmer 1.6s ease-in-out infinite;
+  }
+
+  @keyframes uc-drift {
+    0%, 100% {
+      transform: translate(0, 0) rotate(var(--r, 0deg));
+    }
+    50% {
+      transform: translate(8px, -12px) rotate(calc(var(--r, 0deg) + 3deg));
+    }
+  }
+  .uc-drift {
+    animation: uc-drift 9s ease-in-out infinite;
+  }
+
+  /* ── the cutting-room hero: shears, tape, spark, all on one shared
+     cycle so they stay in sync without any JS orchestration ── */
+  @keyframes uc-cut-blade-a {
+    0%, 12% { transform: rotate(-16deg); }
+    17% { transform: rotate(4deg); }
+    24%, 100% { transform: rotate(-16deg); }
+  }
+  @keyframes uc-cut-blade-b {
+    0%, 12% { transform: rotate(16deg); }
+    17% { transform: rotate(-4deg); }
+    24%, 100% { transform: rotate(16deg); }
+  }
+  @keyframes uc-cut-spark {
+    0%, 15% { opacity: 0; transform: scale(0.2); }
+    17% { opacity: 1; transform: scale(1); }
+    26% { opacity: 0; transform: scale(1.8); }
+    100% { opacity: 0; transform: scale(1.8); }
+  }
+  @keyframes uc-cut-waste {
+    0%, 17% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+    50% { opacity: 0; transform: translate(22px, 52px) rotate(12deg); }
+    100% { opacity: 0; transform: translate(22px, 52px) rotate(12deg); }
+  }
+  @keyframes uc-cut-tag {
+    0%, 18% { transform: translateY(0) rotate(0deg); }
+    27% { transform: translateY(3px) rotate(-2deg); }
+    35% { transform: translateY(0) rotate(1deg); }
+    42%, 100% { transform: translateY(0) rotate(0deg); }
+  }
+  .uc-cut-blade-a { animation: uc-cut-blade-a 6s ease-in-out infinite; }
+  .uc-cut-blade-b { animation: uc-cut-blade-b 6s ease-in-out infinite; }
+  .uc-cut-spark { animation: uc-cut-spark 6s ease-in-out infinite; }
+  .uc-cut-waste { animation: uc-cut-waste 6s ease-in-out infinite; }
+  .uc-cut-tag { animation: uc-cut-tag 6s ease-in-out infinite; }
+
+  @keyframes uc-draw {
+    to { stroke-dashoffset: 0; }
+  }
+  .uc-check-circle {
+    stroke-dasharray: 165;
+    stroke-dashoffset: 165;
+    animation: uc-draw 500ms ease-out forwards;
+  }
+  .uc-check-mark {
+    stroke-dasharray: 34;
+    stroke-dashoffset: 34;
+    animation: uc-draw 350ms ease-out 400ms forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .uc-chop-in,
+    .uc-fade-up,
+    .uc-shimmer,
+    .uc-drift,
+    .uc-cut-blade-a,
+    .uc-cut-blade-b,
+    .uc-cut-spark,
+    .uc-cut-waste,
+    .uc-cut-tag,
+    .uc-check-circle,
+    .uc-check-mark {
+      animation: none;
+    }
+    /* freeze on the "already cut" end state instead of a mid-cycle frame */
+    .uc-cut-blade-a { transform: rotate(-16deg); }
+    .uc-cut-blade-b { transform: rotate(16deg); }
+    .uc-cut-waste { opacity: 0; transform: translate(22px, 52px) rotate(12deg); }
+    .uc-check-circle,
+    .uc-check-mark {
+      stroke-dashoffset: 0;
+    }
+  }
+}

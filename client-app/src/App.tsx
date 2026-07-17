@@ -14,23 +14,24 @@ const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <div className="bg-gray-100">
+        <div className="flex min-h-screen flex-col bg-paper">
           <Navbar />
-          <Routes>
-            <Route path="/" element={<ShortenUrl />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/shorten" element={<ShortenUrl />} />
-            <Route element={<PrivateRoute />}>
-              <Route path="/link-history" element={<LinkHistory />} />
-              <Route path="/analytics/:urlId" element={<Analytics />} />
-            </Route>
-            <Route path="/404" element={<NotFound />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<ShortenUrl />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/shorten" element={<ShortenUrl />} />
+              <Route element={<PrivateRoute />}>
+                <Route path="/link-history" element={<LinkHistory />} />
+                <Route path="/analytics/:urlId" element={<Analytics />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer />
         </div>
       </Router>
-      <Footer />
     </AuthProvider>
   );
 };

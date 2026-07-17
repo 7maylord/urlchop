@@ -1,31 +1,42 @@
 import redisClient from '../config/redisClient';
 
 /**
- * Retrieves a cached URL by its key.
+ * Retrieves a cached value by its key. Returns null if Redis is unavailable.
  * @param key - The cache key.
- * @returns The cached URL or null if not found.
  */
-
-
 export const cacheGet = async (key: string): Promise<string | null> => {
-  return await redisClient.get(key);
+  if (!redisClient.isReady) return null;
+  try {
+    return await redisClient.get(key);
+  } catch {
+    return null;
+  }
 };
 
 /**
- * Sets a URL in the cache with a TTL.
+ * Sets a value in the cache with a TTL. No-ops if Redis is unavailable.
  * @param key - The cache key.
- * @param value - The URL value to cache.
+ * @param value - The value to cache.
  * @param ttl - Time-To-Live in seconds.
  */
-
 export const cacheSet = async (key: string, value: string, ttl: number): Promise<void> => {
+  if (!redisClient.isReady) return;
+  try {
     await redisClient.set(key, value, { EX: ttl });
+  } catch {
+    /* cache write is best-effort */
+  }
 };
 
 /**
- * Deletes a URL from the cache.
+ * Deletes a value from the cache. No-ops if Redis is unavailable.
  * @param key - The cache key.
  */
 export const cacheDel = async (key: string): Promise<void> => {
-  await redisClient.del(key);
+  if (!redisClient.isReady) return;
+  try {
+    await redisClient.del(key);
+  } catch {
+    /* cache delete is best-effort */
+  }
 };

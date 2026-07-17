@@ -29,12 +29,8 @@ export const registerUser = async (req: Request, res: Response) => {
 
     // Save the user to the database
     await user.save();
-    // Typeguard to check if new user contains _id property
-    if (!user._id) {
-        throw new Error('User ID is missing');
-      }  
     // Generate token
-    const token = generateToken(user._id);
+    const token = generateToken(user._id.toString());
     res.status(201).json({ message: 'User created successfully', user, token });
   } catch (error: any) {
     res.status(400).json({ error: error.message });

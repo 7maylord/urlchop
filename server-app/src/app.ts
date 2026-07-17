@@ -3,7 +3,7 @@ import fs from "fs";
 import rateLimiter from "./utils/rateLimiter";
 import helmet from "helmet";
 import cors from "cors";
-//import { corsOptions } from "./config/corsOptions";
+import { corsOptions } from "./config/corsOptions";
 import urlRoutes from "./routes/urlRoutes";
 import authRoutes from "./routes/authRoutes";
 import swaggerUi from 'swagger-ui-express';
@@ -14,15 +14,14 @@ const app = express();
 const file = fs.readFileSync("./src/openapi.yaml", "utf-8");
 const swaggerDocument = YAML.parse(file);
 
-// Trust proxy headers
-//app.set('trust proxy', 1);
+// Trust the first proxy hop (Render/Vercel) so rate limiting keys off the real client IP.
+app.set("trust proxy", 1);
 
 //middleware
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors())
-//app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(rateLimiter);
 
 //routes
@@ -37,10 +36,9 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Server is running");
 });
 
-//catch all route
-app.all("*", (req: Request, res: Response) => {
-  res.status(404);
-  res.json({
+//catch all route (Express 5 no longer accepts a bare "*" path)
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
     message: "Not found",
   });
 });

@@ -12,10 +12,10 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
 
 ## Requirements
 
-- npm
--   **Frontend**: React, and TypeScript
--   **Backend**: Node.js, TypeScript, Express, MongoDB, and Redis.
--   **Deployment**: Vercel
+- Node.js >= 20 and [pnpm](https://pnpm.io). `client-app` and `server-app` are independent pnpm projects — install and run each from its own directory.
+-   **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4
+-   **Backend**: Node.js, TypeScript, Express 5, MongoDB (Mongoose), and Redis
+-   **Deployment**: Vercel (client) / Render (server)
 
 ## Usage
 
@@ -37,57 +37,60 @@ Brief is the new black. UrlChop is a simple tool that makes URLs as short as pos
    git clone https://github.com/7maylord/urlchop.git
    cd urlchop
 
-2. Install dependencies:
+2. Install dependencies (each app separately):
     ```sh
-    cd client-app && npm install
-    cd ../server-app && npm install
+    cd client-app && pnpm install
+    cd ../server-app && pnpm install
     ```
 
 3. Set up environment variables:
-    Create a `.env` file in the server-app directory and add the following:
+    Create a `.env` file in the `server-app` directory (see `server-app/.env.sample`):
     ```env
-    # Server configuration
+    # Server
     PORT=3030
+    BASE=http://localhost:3030          # base used to build short URLs
 
-    # Database configuration
-    REDIS_URL=redis://localhost:6379
+    # Database
+    MONGO_URI=mongodb://localhost:27017/urlchop
+
+    # Redis (optional — the app runs uncached if Redis is not configured)
     REDIS_HOST=localhost
     REDIS_PORT=6379
     REDIS_PASSWORD=your_redis_password
-    MONGODB_URI=mongodb://localhost:27017/urlchop
 
-    # Rate limiter configuration
+    # Rate limiter
     RATE_LIMIT_WINDOW=15
     RATE_LIMIT_MAX=100
-        
-    JWT_SECRET=your_jwt_secret
+
+    # Auth & QR
+    JWT_SECRET=your_jwt_secret          # required — the server refuses to start without it
     QR_API_URL=https://api.qrserver.com/v1/create-qr-code/
-      ```
-    
-    Create a `.env` file in the client-app directory and add the following:
+
+    # CORS allowlist (comma-separated)
+    ALLOWED_ORIGINS=http://localhost:5174
+    ```
+
+    Create a `.env` file in the `client-app` directory (see `client-app/.env.sample`):
     ```env
     VITE_APP_ENV=development
-
-    #this is your backend server
-    VITE_API_URL=http://localhost:3030/api 
-
-    #this is your frontend server
-    VITE_APP_URL=http://localhost:5174  
+    VITE_API_URL=http://localhost:3030/api   # backend server
+    VITE_APP_URL=http://localhost:5174       # frontend server
     ```
 
-4. Build the Project:
+4. Run in development (each app in its own terminal):
     ```sh
-    # Backend Server
-    npm run build
-    # Frontend Server
-    npm run build
+    # server-app
+    pnpm dev   # ts-node-dev, hot reload
+
+    # client-app
+    pnpm dev   # Vite
     ```
-5. Development Mode: To run the server in development mode with hot-reloading.
+
+5. Build and test (from each app's directory):
     ```sh
-    # Backend Server
-    npm run start
-    # Frontend Server
-    npm run dev
+    pnpm build   # server-app or client-app
+    pnpm test    # server-app only
+    pnpm lint    # client-app only
     ```
 
 ## API Documentation
@@ -95,10 +98,11 @@ The API is documented using OpenAPI. You can view the documentation on [http://l
 
 
 ## Available Scripts
-- npm start: Runs the compiled server.
-- npm run dev: Runs the server in development mode using ts-node-dev.
-- npm run build: Compiles the TypeScript code.
-- npm test: Runs the tests.
+Run these from inside `client-app` or `server-app` respectively:
+- `pnpm dev`: Runs the app in development mode (hot reload).
+- `pnpm build`: Builds the app.
+- `pnpm test` (server-app): Runs the test suite.
+- `pnpm lint` (client-app): Lints the code.
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any changes.

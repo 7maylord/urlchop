@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts/auth-context';
 
 const Navbar = () => {
   const auth = useContext(AuthContext);
@@ -12,22 +12,32 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-slate-900 p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="text-white font-bold text-xl">
-          <Link to="/" className="text-white hover:text-blue-500">UrlChop</Link>
-        </div>
-        <div>
-        {auth?.user ? (
+    <nav className="sticky top-0 z-10 border-b border-line bg-paper/80 backdrop-blur">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
+        <Link to="/" className="font-display text-xl font-bold tracking-tight">
+          Url<span className="text-accent">Chop</span>
+        </Link>
+        <div className="flex items-center gap-1 text-sm sm:gap-2">
+          {auth?.user ? (
             <>
-              <Link to="/link-history" className="text-white mr-4 hover:text-blue-500">Link History</Link>
-              <Link to="/analytics/:urlId" className="text-white mr-4 hover:text-blue-500">Analytics</Link>
-              <button onClick={handleLogout} className="text-white hover:text-blue-500">Logout</button>
+              <Link to="/link-history" className="rounded-md px-3 py-2 text-muted transition hover:text-ink">
+                Links
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="rounded-md px-3 py-2 text-muted transition hover:text-ink active:scale-95"
+              >
+                Log out
+              </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-white mr-4 hover:text-blue-500">Login</Link>
-              <Link to="/register" className="text-white hover:text-blue-500">Register</Link>
+              <Link to="/login" className="rounded-md px-3 py-2 text-muted transition hover:text-ink">
+                Log in
+              </Link>
+              <Link to="/register" className="uc-btn-accent px-3 py-2 transition hover:-translate-y-0.5 active:scale-95">
+                Sign up
+              </Link>
             </>
           )}
         </div>

@@ -1,15 +1,13 @@
-import * as React from 'react';
-
-interface IFooterProps {
-}
-
-const Footer: React.FunctionComponent<IFooterProps> = () => {
+const Footer = () => {
   return (
-    <div className='fixed bottom-0 left-0 w-full bg-slate-900 text-white text-base text-center py-2'>
-        Copyright &#169; UrlChop | MayLord
-    </div>
+    <footer className="border-t border-line">
+      <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-5 py-6 text-sm text-muted sm:flex-row">
+        <span className="font-mono text-ink">urlchop</span>
+        <span>Brief is the new black.</span>
+        <span>&#169; {new Date().getFullYear()} UrlChop &middot; MayLord</span>
+      </div>
+    </footer>
   );
 };
 
 export default Footer;
-

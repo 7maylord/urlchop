@@ -2,11 +2,18 @@ import { Link } from 'react-router-dom';
 
 const NotFound = () => {
   return (
-    <div className="flex flex-col items-center min-h-screen text-center mt-8 md:mt-12 bg-gray-100">
-      <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
-      <p className="text-lg mb-4">The page you are looking for does not exist.</p>
-      <Link to="/" className="text-blue-500 underline">Go to Home</Link>
-    </div>
+    <section className="mx-auto flex max-w-lg flex-col items-center px-5 py-24 text-center">
+      <p className="font-mono text-6xl font-bold text-accent">404</p>
+      <h1 className="mt-4 font-display text-2xl font-bold tracking-tight">
+        This one got chopped a little too short.
+      </h1>
+      <p className="mt-3 text-muted">
+        The page you&rsquo;re after doesn&rsquo;t exist — or the link expired.
+      </p>
+      <Link to="/" className="mt-8 uc-btn-accent">
+        Back to shortening
+      </Link>
+    </section>
   );
 };
 
