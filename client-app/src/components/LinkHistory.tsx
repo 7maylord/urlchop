@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import { IUrl } from '../types';
+import { useCountUp } from '../hooks/useCountUp';
 
 const totalClicks = (link: IUrl) =>
   Array.isArray(link.clicks) ? link.clicks.reduce((sum, c) => sum + c.count, 0) : 0;
@@ -11,6 +12,7 @@ const LinkHistory = () => {
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const count = useCountUp(links.length);
 
   useEffect(() => {
     let active = true;
@@ -69,23 +71,33 @@ const LinkHistory = () => {
 
   return (
     <section className="mx-auto max-w-4xl px-5 py-12">
-      <div className="flex items-baseline justify-between gap-4">
+      <div className="uc-fade-up flex items-baseline justify-between gap-4">
         <h1 className="font-display text-3xl font-bold tracking-tight">Your links</h1>
-        {links.length > 0 && (
-          <span className="font-mono text-sm text-muted">{links.length} total</span>
+        {!loading && links.length > 0 && (
+          <span className="font-mono text-sm text-muted">{count} total</span>
         )}
       </div>
 
       {notice && (
-        <p className="mt-4 rounded-md border border-line bg-white px-4 py-3 text-sm text-ink" role="status">
+        <p className="uc-fade-up mt-4 rounded-md border border-line bg-white px-4 py-3 text-sm text-ink" role="status">
           {notice}
         </p>
       )}
 
       {loading ? (
-        <p className="mt-10 font-mono text-sm text-muted">Loading…</p>
+        <ul className="mt-8 space-y-3" aria-busy="true" aria-label="Loading your links">
+          {[0, 1, 2].map((i) => (
+            <li key={i} className="uc-card flex items-center gap-4 p-5">
+              <div className="uc-shimmer h-16 w-16 shrink-0 rounded-md" />
+              <div className="flex-1 space-y-2">
+                <div className="uc-shimmer h-4 w-1/3 rounded" />
+                <div className="uc-shimmer h-3 w-2/3 rounded" />
+              </div>
+            </li>
+          ))}
+        </ul>
       ) : links.length === 0 ? (
-        <div className="mt-10 uc-card p-10 text-center">
+        <div className="uc-fade-up mt-10 uc-card p-10 text-center">
           <p className="text-muted">No links yet.</p>
           <Link to="/" className="mt-3 inline-block font-medium text-accent hover:underline">
             Chop your first one &rarr;
@@ -93,14 +105,18 @@ const LinkHistory = () => {
         </div>
       ) : (
         <ul className="mt-8 space-y-3">
-          {links.map((link) => (
-            <li key={link._id} className="uc-card p-5">
+          {links.map((link, i) => (
+            <li
+              key={link._id}
+              className="uc-card uc-fade-up uc-stagger p-5"
+              style={{ '--i': i } as React.CSSProperties}
+            >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <img
                   src={link.qrCode}
                   alt={`QR code for ${link.shortUrl}`}
                   onClick={() => downloadQr(link.qrCode)}
-                  className="h-16 w-16 shrink-0 cursor-pointer rounded-md border border-line bg-white p-1"
+                  className="h-16 w-16 shrink-0 cursor-pointer rounded-md border border-line bg-white p-1 transition hover:scale-105"
                   title="Download QR code"
                 />
 
@@ -121,7 +137,7 @@ const LinkHistory = () => {
                 <div className="flex shrink-0 items-center gap-4">
                   <Link
                     to={`/analytics/${link.urlId}`}
-                    className="text-center font-mono text-sm text-ink hover:text-accent"
+                    className="text-center font-mono text-sm text-ink transition hover:text-accent"
                     title="View analytics"
                   >
                     <span className="block text-lg font-medium leading-none">{totalClicks(link)}</span>
@@ -131,7 +147,7 @@ const LinkHistory = () => {
                   <button
                     type="button"
                     onClick={() => copy(link.shortUrl, link._id)}
-                    className="uc-btn-ghost px-3 py-2 text-xs"
+                    className="uc-btn-ghost px-3 py-2 text-xs transition active:scale-95"
                   >
                     {copiedId === link._id ? 'Copied' : 'Copy'}
                   </button>
@@ -139,7 +155,7 @@ const LinkHistory = () => {
                   <button
                     type="button"
                     onClick={() => deleteUrl(link.urlId)}
-                    className="rounded-md px-2 py-2 text-xs text-muted hover:text-danger"
+                    className="rounded-md px-2 py-2 text-xs text-muted transition hover:text-danger active:scale-95"
                     aria-label={`Delete ${link.shortUrl}`}
                   >
                     Delete

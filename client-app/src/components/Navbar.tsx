@@ -20,22 +20,22 @@ const Navbar = () => {
         <div className="flex items-center gap-1 text-sm sm:gap-2">
           {auth?.user ? (
             <>
-              <Link to="/link-history" className="rounded-md px-3 py-2 text-muted hover:text-ink">
+              <Link to="/link-history" className="rounded-md px-3 py-2 text-muted transition hover:text-ink">
                 Links
               </Link>
               <button
                 onClick={handleLogout}
-                className="rounded-md px-3 py-2 text-muted hover:text-ink"
+                className="rounded-md px-3 py-2 text-muted transition hover:text-ink active:scale-95"
               >
                 Log out
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="rounded-md px-3 py-2 text-muted hover:text-ink">
+              <Link to="/login" className="rounded-md px-3 py-2 text-muted transition hover:text-ink">
                 Log in
               </Link>
-              <Link to="/register" className="uc-btn-accent px-3 py-2">
+              <Link to="/register" className="uc-btn-accent px-3 py-2 transition hover:-translate-y-0.5 active:scale-95">
                 Sign up
               </Link>
             </>
